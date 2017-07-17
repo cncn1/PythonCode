@@ -47,6 +47,7 @@ if __name__ == "__main__":
     # dot -Tpng -o 1.png 1.dot
     f = open('.\\iris_tree.dot', 'w')
     tree.export_graphviz(model.get_params('DTC')['DTC'], out_file=f)
+    f.close()
 
     # 画图
     N, M = 100, 100  # 横纵各采样多少个值
@@ -97,7 +98,7 @@ if __name__ == "__main__":
         result = (y_test_hat == y_test)  # True则预测正确，False则预测错误
         err = 1 - np.mean(result)
         err_list.append(err)
-        print d, ' 准确度: %.2f%%' % (100 * err)
+        print d, ' 错误率: %.2f%%' % (100 * err)
     plt.figure(facecolor='w')
     plt.plot(depth, err_list, 'ro-', lw=2)
     plt.xlabel(u'决策树深度', fontsize=15)

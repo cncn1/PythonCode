@@ -18,11 +18,11 @@ if __name__ == "__main__":
     mpl.rcParams['font.sans-serif'] = [u'SimHei']  # 黑体 FangSong/KaiTi
     mpl.rcParams['axes.unicode_minus'] = False
 
-    path = '..\\8.Regression\\8.iris.data'  # 数据文件路径
+    path = '.\\8.iris.data'  # 数据文件路径
     data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
     x_prime, y = np.split(data, (4,), axis=1)
 
-    feature_pairs = [[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]]
+    feature_pairs = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
     plt.figure(figsize=(10, 9), facecolor='#FFFFFF')
     for i, pair in enumerate(feature_pairs):
         # 准备数据
