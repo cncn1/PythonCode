@@ -4,6 +4,7 @@
 import xgboost as xgb
 import numpy as np
 
+
 # 1、xgBoost的基本使用
 # 2、自定义损失函数的梯度和二阶导
 # 3、binary:logistic/logitraw(这个原始参数用0做评判指标)
@@ -13,7 +14,7 @@ import numpy as np
 def log_reg(y_hat, y):
     p = 1.0 / (1.0 + np.exp(-y_hat))
     g = p - y.get_label()
-    h = p * (1.0-p)
+    h = p * (1.0 - p)
     return g, h
 
 
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     data_test = xgb.DMatrix('12.agaricus_test.txt')
     print type(data_train)
     # 设置参数
-    param = {'max_depth': 2, 'eta': 1, 'silent': 1, 'objective': 'binary:logitraw'} # logitraw
+    param = {'max_depth': 2, 'eta': 1, 'silent': 1, 'objective': 'binary:logitraw'}  # logitraw
     # param = {'max_depth': 3, 'eta': 0.3, 'silent': 1, 'objective': 'reg:logistic'}
     watchlist = [(data_test, 'eval'), (data_train, 'train')]
     n_round = 3
@@ -43,4 +44,4 @@ if __name__ == "__main__":
     error_rate = float(error) / len(y_hat)
     print '样本总数：\t', len(y_hat)
     print '错误数目：\t%4d' % error
-    print '错误率：\t%.5f%%' % (100*error_rate)
+    print '错误率：\t%.5f%%' % (100 * error_rate)
