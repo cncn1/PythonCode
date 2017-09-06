@@ -19,10 +19,29 @@ a = np.mat([[4, 6, 0],
             [-3, -6, 1]])
 
 lamda0 = np.linalg.eigvals(a)  # 只求特征值
-print lamda0,'\n'
+print lamda0, '\n'
 lamda, vector = np.linalg.eig(a)  # 求特征值和特征向量
 print lamda, '\n', vector
 
+# np.2 计算矩阵的行列式的值,逆,伴随
+A = np.array([[1, -2, 1], [0, 2, -1], [1, 1, -2]])
+
+A_abs = np.linalg.det(A)  # 求A的行列式的值
+print A_abs
+
+B = np.linalg.inv(A)    # 求A的逆
+print B
+
+A_bansui = B * A_abs    # 求A的伴随
+print A_bansui
+# np.3 计算阶乘
+print np.math.factorial(125)
+
+# pd.1 读取cvs文件
+import pandas
+
+iris = pandas.read_csv("iris.csv")
+print iris.describe()
 # o.1 解方程
 from sympy import *
 
