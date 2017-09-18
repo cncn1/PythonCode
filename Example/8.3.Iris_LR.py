@@ -17,7 +17,7 @@ def iris_type(s):
 
 
 if __name__ == "__main__":
-    path = u'8.iris.data'  # 数据文件路径
+    path = u'iris.data'  # 数据文件路径
 
     # # # 手写读取数据
     # # f = file(path)

@@ -12,7 +12,7 @@ def iris_type(s):
 
 
 if __name__ == "__main__":
-    path = u'..\\8.Regression\\8.iris.data'  # 数据文件路径
+    path = '.\8.iris.data'  # 数据文件路径
     data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
     x, y = np.split(data, (4,), axis=1)
     x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1, test_size=50)

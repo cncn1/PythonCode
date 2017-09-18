@@ -22,7 +22,7 @@ def show_accuracy(a, b, tip):
 
 
 if __name__ == "__main__":
-    path = '..\\8.Regression\\8.iris.data'  # 数据文件路径
+    path = '.\8.iris.data'  # 数据文件路径
     data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
     x, y = np.split(data, (4,), axis=1)
     x = x[:, :2]

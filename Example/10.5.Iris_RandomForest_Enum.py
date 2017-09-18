@@ -18,7 +18,7 @@ if __name__ == "__main__":
     mpl.rcParams['font.sans-serif'] = [u'SimHei']  # 黑体 FangSong/KaiTi
     mpl.rcParams['axes.unicode_minus'] = False
 
-    path = '..\\8.Regression\\8.iris.data'  # 数据文件路径
+    path = '.\\8.iris.data'  # 数据文件路径
     data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
     x_prime, y = np.split(data, (4,), axis=1)
 
