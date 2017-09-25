@@ -1,5 +1,5 @@
 from numpy import *
-from time import sleep
+
 def loadDataSet(fileName):
     dataMat = []
     labelMat = []
@@ -68,7 +68,7 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
     return b,alphas
 
 if __name__ == '__main__':
-    dataMat, labelMat = loadDataSet('testSet.txt')
+    dataMat, labelMat = loadDataSet('../Datas/testSet.txt')
     # print dataMat, labelMat
-    b,alphs = smoSimple(dataMat,labelMat,0.6,0.001,4)
+    b,alphs = smoSimple(dataMat,labelMat,0.6,0.001,100)
     # print b,'\n',alphs

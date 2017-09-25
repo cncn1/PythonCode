@@ -25,7 +25,7 @@ def iris_type(s):
 
 
 if __name__ == '__main__':
-    path = '..\\8.Regression\\8.iris.data'  # 数据文件路径
+    path = '..\\8.Regression\\iris.data'  # 数据文件路径
     data = np.loadtxt(path, dtype=float, delimiter=',', converters={4: iris_type})
     # 将数据的0到3列组成x，第4列得到y
     x_prime, y = np.split(data, (4,), axis=1)

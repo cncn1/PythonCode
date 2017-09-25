@@ -56,7 +56,7 @@ if __name__ == "__main__":
     mpl.rcParams['axes.unicode_minus'] = False
 
     cm_light = mpl.colors.ListedColormap(['#A0FFA0', '#FFA0A0', '#A0A0FF'])
-    cm_dark = mpl.ncolors.ListedColormap(['g', 'r', 'b'])
+    cm_dark = mpl.colors.ListedColormap(['g', 'r', 'b'])
     x1_min, x1_max = x[:, 0].min(), x[:, 0].max()  # 第0列的范围
     x2_min, x2_max = x[:, 1].min(), x[:, 1].max()  # 第1列的范围
     x1, x2 = np.mgrid[x1_min:x1_max:500j, x2_min:x2_max:500j]  # 生成网格采样点
