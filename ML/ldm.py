@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
-import time
+import timeit
 from numpy import *
 from sklearn.model_selection import train_test_split
 
@@ -182,7 +182,7 @@ def calcWs(alphas, dataArr, classLabels):  # 计算w
     return w
 
 
-def train(dataArr, labelArr, C=200, toler=0.0001, maxIter=10000, kTup=('line', 0)):
+def svmtrain(dataArr, labelArr, C=200, toler=0.0001, maxIter=10000, kTup=('line', 0)):
     datMat = mat(dataArr)
     labelMat = mat(labelArr).transpose()
     m, n = shape(datMat)
@@ -194,11 +194,11 @@ def train(dataArr, labelArr, C=200, toler=0.0001, maxIter=10000, kTup=('line', 0
     # dataPredict = zeros((m,1))    # 记录训练数据分类的数组
     for i in range(m):
         predict = svK[:, i].T * multiply(labelSV, alphas[svInd]) + b
+        # dataPredict[i, 0] = sign(predict)
         if sign(predict) != sign(labelArr[i]):
             errorCount += 1
-            # dataPredict[i, 0] = sign(predict)
     # print dataPredict
-    print "the training error rate is: %f" % (float(errorCount) / m)
+    print "the svm_training error rate is: %f" % (float(errorCount) / m)
     # print "there are %d Support Vectors" % len(svInd) # 支持向量的个数
     # sVs = datMat[svInd]  # get matrix of only support vectors
     w = calcWs(alphas, dataArr, labelArr)
@@ -223,28 +223,23 @@ def ldm(dataMatIn, classLabels, lambda1, lambda2, C=200, toler=0.01, maxIter=100
     QI = Q.I
     oS.alphas = lambda2 * QI * Gy / m
     A = QI * GY
-    ei = mat(ones((m, 1)))
-    hii = ei.T * YG * QI * GY * ei
+    e = mat(eye(m))
     count = 0
     flag = False
     while count < maxIter:
         if flag:
             break
         for i in xrange(m):
-            dfbetai = ei.T * YG * oS.alphas - 1
-            if dfbetai < toler:
+            hii = e[i] * YG * QI * GY * e[i].T
+            dfbetai = e[i] * YG * oS.alphas - 1
+            if abs(dfbetai) < toler:
                 flag = True
                 break
             betaOld[i, 0] = beta[i, 0]
-
-            beta[i, 0] = beta[i, 0] - 1.0 * dfbetai / hii
-            print 'beta:', beta[i, 0], '\n'
-            oS.alphas = oS.alphas + (beta[i, 0] - betaOld[i, 0]) * A * ei
+            beta[i, 0] = min(max(beta[i, 0] - 1.0 * dfbetai / hii, 0), C)
+            oS.alphas = oS.alphas + (beta[i, 0] - betaOld[i, 0]) * A * e[i].T
         count += 1
-        print '迭代第%d次\n' % count
-        # print oS.alphas
-    # print '迭代%d次收敛\n' % count
-    # print oS.alphas
+    print 'ldm迭代%d次收敛\n' % count
     return oS.alphas, oS.K
 
 
@@ -253,25 +248,15 @@ def ldmtrain(dataArr, labelArr, lambda1, lambda2, C=200, toler=0.01, maxIter=100
     labelMat = mat(labelArr).transpose()
     m, n = shape(datMat)
     alphas, K = ldm(datMat, labelMat, lambda1, lambda2, C, toler, maxIter, kTup)  # C=200 important
-    svInd = nonzero(alphas.A > 0)[0]  # 支持向量序号对应的列表
-    svK = K[svInd]  # 全部支持向量对应的核矩阵
-    labelSV = labelMat[svInd]
     errorCount = 0
     # dataPredict = zeros((m,1))    # 记录训练数据分类的数组
     for i in range(m):
-        predict = svK[:, i].T * multiply(labelSV, alphas[svInd])
+        predict = K[i] * alphas
+        # dataPredict[i, 0] = sign(predict)
         if sign(predict) != sign(labelArr[i]):
             errorCount += 1
-            # dataPredict[i, 0] = sign(predict)
-    # print dataPredict
-    print "the training error rate is: %f" % (float(errorCount) / m)
-    # print "there are %d Support Vectors" % len(svInd) # 支持向量的个数
-    # sVs = datMat[svInd]  # get matrix of only support vectors
-    w = calcWs(alphas, dataArr, labelArr)
-    return w
-    # for i in range(m):
-    #     wp = datMat[i] * mat(w) + b   # 根据计算的w进行预测
-    #     print wp
+    # print dataPredict           # 记录预测数据结果
+    print "the ldm_training error rate is: %f" % (float(errorCount) / m)
 
 
 if __name__ == '__main__':
@@ -279,6 +264,12 @@ if __name__ == '__main__':
     # data = loadtxt(path, dtype=float, delimiter='\t')
     # x, y = split(data, (2,), axis=1)
     # x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1, train_size=0.6)
-    dataArr, labelArr = loadDataSet('testSetRBF.txt')
-    # w = train(dataArr, labelArr, 100, 0.0001, 10000, kTup=('rbf', 1.5))
-    ldmtrain(dataArr, labelArr, 5, 2, 1, 0.0001, 10, kTup=('rbf', 1.5))
+    dataArr, labelArr = loadDataSet('../Datas/testSet.txt')
+    start = timeit.default_timer()
+    w = svmtrain(dataArr, labelArr, 100, 0.0001, 10000, kTup=('rbf', 1.5))
+    end = timeit.default_timer()
+    print 'svm运行时间:', end - start
+    start = timeit.default_timer()
+    ldmtrain(dataArr, labelArr, 50, 20000, 15, 0.0001, 10000, kTup=('rbf', 1.5))
+    end = timeit.default_timer()
+    print 'ldm运行时间:', end - start
