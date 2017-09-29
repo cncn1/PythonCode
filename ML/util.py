@@ -12,5 +12,15 @@ def autoNorm(dataSet):
     normDataSet = dataSet - tile(minVals, (m, 1))  # 减去最小值
     normDataSet = normDataSet / tile(ranges, (m, 1))  # element wise divide
     # 再除以幅度值，实现归一化，tile功能是创建一定规模的指定数组
-    return normDataSet, ranges, minVals
+    return normDataSet
 
+
+def loadDataSet(fileName, symbol):
+    dataMat = []
+    labelMat = []
+    fr = open(fileName)
+    for line in fr.readlines():
+        lineArr = line.strip().split(symbol)
+        dataMat.append(map(float, lineArr[:-1]))
+        labelMat.append(float(lineArr[-1]))
+    return dataMat, labelMat
