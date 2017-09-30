@@ -136,14 +136,8 @@ def ldmEXtrain(dataArr, labelArr, lambda1, lambda2, C=200, toler=0.01, maxIter=1
     else:
         print "the nyldm_training error rate is: %f" % (float(errorCount) / m)
 
-# def data_type(s):
-#     it = {'1': 1, '2': -1}
-#     return it[s]
-
 if __name__ == '__main__':
-    path = '..//Datas/uci/parkinsons/parkinsons.data'  # 数据文件路径
-    data = np.loadtxt(path, dtype=float, delimiter=',')
-    x0, y0 = np.split(data, (-1,), axis=1)
+    x0, y0 = util.loadData('heart')
     x0 = util.autoNorm(x0)  # 数据归一化
     # m, n = np.shape(x0)
     # index = np.array([i for i in range(m)]).reshape((m, 1))
@@ -153,10 +147,10 @@ if __name__ == '__main__':
     x = np.vstack((sampleX, sampleX_test))  # 将经过抽样处理的数据,按新的顺序组织数据
     y = np.vstack((sampleY, sampleY_test))
     start = timeit.default_timer()
-    ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 100, kTup=('rbf', 1.5))
+    ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 10, kTup=('rbf', 1.5))
     end = timeit.default_timer()
     print 'ldm运行时间:', end - start
     start = timeit.default_timer()
-    ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 100, kTup=('rbf', 1.5), sampleX=sampleX, sampleX_test=sampleX_test)
+    ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 10, kTup=('rbf', 1.5), sampleX=sampleX, sampleX_test=sampleX_test)
     end = timeit.default_timer()
     print 'nyldm运行时间:', end - start
