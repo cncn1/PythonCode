@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 import numpy as np
-
+import bz2file
 
 def autoNorm(dataSet):
     minVals = dataSet.min(0)  # 每一列的最小值
@@ -41,6 +41,13 @@ def loadData(fileName, path='', delimiter='\t'):
         path = '..//Datas/testSetRBF2.txt'
         data = np.loadtxt(path, dtype=float, delimiter='\t')
         x0, y0 = np.split(data, (-1,), axis=1)
+    elif fileName == 'alpha_train':
+        pathX = "F://Datas//Large Scale Data FTP//alpha//alpha_train.dat.bz2"
+        x0 = bz2file.open(pathX, "r")
+        # x0 = np.mat(x0)
+        pathY = "F://Datas//Large Scale Data FTP//alpha//alpha_train.lab.bz2"
+        y0 = bz2file.open(pathY, "r")
+        # y0 = np.mat(y0)
     else:
         data = np.loadtxt(path, dtype=float, delimiter=delimiter)
         x0, y0 = np.split(data, (-1,), axis=1)

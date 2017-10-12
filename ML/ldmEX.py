@@ -137,20 +137,22 @@ def ldmEXtrain(dataArr, labelArr, lambda1, lambda2, C=200, toler=0.01, maxIter=1
         print "the nyldm_training error rate is: %f" % (float(errorCount) / m)
 
 if __name__ == '__main__':
-    x0, y0 = util.loadData('heart')
+    x0, y0 = util.loadData('alpha_train')
     x0 = util.autoNorm(x0)  # 数据归一化
+
     # m, n = np.shape(x0)
     # index = np.array([i for i in range(m)]).reshape((m, 1))
     # x0 = np.hstack((index, x0))
     # y0 = np.hstack((index, y0))
-    sampleX, sampleX_test, sampleY, sampleY_test = train_test_split(x0, y0, random_state=1, test_size=0.20)  # 数据抽样
-    x = np.vstack((sampleX, sampleX_test))  # 将经过抽样处理的数据,按新的顺序组织数据
-    y = np.vstack((sampleY, sampleY_test))
-    start = timeit.default_timer()
-    ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 10, kTup=('rbf', 1.5))
-    end = timeit.default_timer()
-    print 'ldm运行时间:', end - start
-    start = timeit.default_timer()
-    ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 10, kTup=('rbf', 1.5), sampleX=sampleX, sampleX_test=sampleX_test)
-    end = timeit.default_timer()
-    print 'nyldm运行时间:', end - start
+
+    # sampleX, sampleX_test, sampleY, sampleY_test = train_test_split(x0, y0, random_state=1, test_size=0.20)  # 数据抽样
+    # x = np.vstack((sampleX, sampleX_test))  # 将经过抽样处理的数据,按新的顺序组织数据
+    # y = np.vstack((sampleY, sampleY_test))
+    # start = timeit.default_timer()
+    # ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 10, kTup=('rbf', 1.5))
+    # end = timeit.default_timer()
+    # print 'ldm运行时间:', end - start
+    # start = timeit.default_timer()
+    # ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 10, kTup=('rbf', 1.5), sampleX=sampleX, sampleX_test=sampleX_test)
+    # end = timeit.default_timer()
+    # print 'nyldm运行时间:', end - start
