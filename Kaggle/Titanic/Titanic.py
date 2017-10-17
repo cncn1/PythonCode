@@ -48,6 +48,7 @@ def write_result(model, type):
     open_file_object.writerows(zip(passenger_id, y))
     predictions_file.close()
 
+
 def show_accuracy(a, b, tip):
     acc = a.ravel() == b.ravel()
     acc_rate = 100 * float(acc.sum()) / a.size
