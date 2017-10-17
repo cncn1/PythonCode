@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 import timeit
+import datetime
 import numpy as np
 from sklearn.model_selection import train_test_split
 from ML import util
@@ -108,6 +109,7 @@ def ldm(dataMatIn, classLabels, lambda1, lambda2, C=200, toler=0.01, maxIter=100
         print 'nyldm迭代%d次收敛' % count
     return oS.alphas, oS.K
 
+
 # ldm原始升级版
 # dataArr 数据列表
 # labelArr 数据类别列表
@@ -136,23 +138,43 @@ def ldmEXtrain(dataArr, labelArr, lambda1, lambda2, C=200, toler=0.01, maxIter=1
     else:
         print "the nyldm_training error rate is: %f" % (float(errorCount) / m)
 
+
+def main(X, Y, low, high):
+    while low < 499000:
+        high = low + len - 1
+        totStart = timeit.default_timer()
+        time_stamp = datetime.datetime.now()
+        print "time_stamp       " + time_stamp.strftime('%Y.%m.%d-%H:%M:%S')  # strftime可以自定义时间的输出格式，
+        print low, "-", high
+        # x0, y0 = util.loadData('alpha', low=low, len=len)
+        x0, y0 = X[low:high], Y[low:high]
+        # print x0[0:5], y0[0:5]
+        x0 = util.autoNorm(x0)  # 数据归一化
+
+        # m, n = np.shape(x0)
+        # index = np.array([i for i in range(m)]).reshape((m, 1))
+        # x0 = np.hstack((index, x0))
+        # y0 = np.hstack((index, y0))
+
+        sampleX, sampleX_test, sampleY, sampleY_test = train_test_split(x0, y0, random_state=1, test_size=0.90)  # 数据抽样
+        x = np.vstack((sampleX, sampleX_test))  # 将经过抽样处理的数据,按新的顺序组织数据
+        y = np.vstack((sampleY, sampleY_test))
+        start = timeit.default_timer()
+        ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 30, kTup=('rbf', 1.5))
+        end = timeit.default_timer()
+        print 'ldm运行时间:', end - start
+        start = timeit.default_timer()
+        ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 30, kTup=('rbf', 1.5), sampleX=sampleX, sampleX_test=sampleX_test)
+        end = timeit.default_timer()
+        print 'nyldm运行时间:', end - start
+        totEnd = timeit.default_timer()
+        print '程序总运行时间:', totEnd - totStart
+        low += len
+
+
 if __name__ == '__main__':
-    x0, y0 = util.loadData('alpha_train')
-    x0 = util.autoNorm(x0)  # 数据归一化
+    # low = 0;len = 500
+    # X, Y = util.loadData('alpha')
+    # main(X, Y, low, len)
+    X, Y = util.loadData('news20')
 
-    # m, n = np.shape(x0)
-    # index = np.array([i for i in range(m)]).reshape((m, 1))
-    # x0 = np.hstack((index, x0))
-    # y0 = np.hstack((index, y0))
-
-    # sampleX, sampleX_test, sampleY, sampleY_test = train_test_split(x0, y0, random_state=1, test_size=0.20)  # 数据抽样
-    # x = np.vstack((sampleX, sampleX_test))  # 将经过抽样处理的数据,按新的顺序组织数据
-    # y = np.vstack((sampleY, sampleY_test))
-    # start = timeit.default_timer()
-    # ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 10, kTup=('rbf', 1.5))
-    # end = timeit.default_timer()
-    # print 'ldm运行时间:', end - start
-    # start = timeit.default_timer()
-    # ldmEXtrain(x, y, 1000, 200000, 15, 0.0001, 10, kTup=('rbf', 1.5), sampleX=sampleX, sampleX_test=sampleX_test)
-    # end = timeit.default_timer()
-    # print 'nyldm运行时间:', end - start
