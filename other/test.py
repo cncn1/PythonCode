@@ -24,9 +24,10 @@ import numpy as np
 
 import pandas as pd
 import bz2file
-pathX = "F://Datas//Large Scale Data FTP//alpha//alpha_train.dat.bz2"
+labDatasPath = 'D:\\LabDatas\\'
+pathX = labDatasPath + "Large Scale Data FTP\\alpha\\alpha_train.dat.bz2"
 # infileX = bz2file.open(pathX, "r")
-pathY = "F://Datas//Large Scale Data FTP//alpha//alpha_train.lab.bz2"
+pathY = labDatasPath + "Large Scale Data FTP\\alpha\\alpha_train.lab.bz2"
 # infileY = bz2file.open(pathY, "r")
 reader = pd.read_csv(pathX, iterator=True, header=None, sep=' ')
 loop = True
