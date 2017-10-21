@@ -173,8 +173,8 @@ def main(X, Y, low, high):
 
 
 if __name__ == '__main__':
-    # low = 0;len = 500
-    # X, Y = util.loadData('alpha')
-    # main(X, Y, low, len)
-    X, Y = util.loadData('news20')
+    low = 0;len = 500
+    X, Y = util.loadData('alpha')
+    main(X, Y, -1, len)
+    # X, Y = util.loadData('news20')
 

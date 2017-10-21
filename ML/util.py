@@ -65,7 +65,7 @@ def loadData(fileName, path='', delimiter='\t', low=-1, len=1000):
     elif fileName == 'news20':
         path = labDatasPath + "libsvmData\\news20\\news20.binary"
         train_label, train_pixel = svm_read_problem(path)
-        print train_label
+        print train_pixel
         # print train_label
         # print x[0:5]
     else:

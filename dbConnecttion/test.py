@@ -20,6 +20,7 @@ print "%s\t%s" % (result["spl"], result["spw"])
 key_list = ['sepallength', 'sepalwidth', 'petallength', 'petalwidth']
 sql = SqlUtil.get_s_sql('iris', key_list, {'class': 1})
 r = mysql.getAll(sql)
+print r
 
 # 释放资源
 mysql.dispose()
