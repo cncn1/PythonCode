@@ -1,6 +1,8 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+import random
 import sys
+
 
 
 def index_replace(index, replace_string, const_value):
@@ -34,4 +36,7 @@ def revers(index):
 
 
 if __name__ == '__main__':
+    for i in xrange(1000):
+        s = random.randint(0,3)
+        print s
     revers(6)

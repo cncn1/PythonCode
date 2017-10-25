@@ -16,11 +16,10 @@ def loadData(fileName):
 
 
 # 数组反转方法
-def revers(index):
-    s = [1] * 9
-    index = index
-    s[index] = (s[index] + 1) % 2
-    print s
+def revers(s, indexList):
+    for index in indexList:
+        s[index] = (s[index] + 1) % 2
+    return s
 
 
 if __name__ == '__main__':
