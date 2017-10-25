@@ -3,16 +3,17 @@
 import math
 from numpy import *
 import util
+import FSFOATOOL as tools
 
-# trainX,trainy=loadData('C:/Users/Administrator/Desktop/install file/processed_data/wine/train_1.txt')#trainX,trainy are all list
-# predictX,predicty=loadData('C:/Users/Administrator/Desktop/install file/processed_data/wine/predict_1.txt')
+# trainX,trainY=loadData('C:/Users/Administrator/Desktop/install file/processed_data/wine/train_1.txt')#trainX,trainY are all list
+# predictX,predictY=loadData('C:/Users/Administrator/Desktop/install file/processed_data/wine/predict_1.txt')
 # initialization_parameters = [15, 3, 6, 0.05, 50]
 # 变量定义
-inputDict = {'arcene': 'arcene'}
-trainX, trainy, predictX, predicty = util.loadData('arcene')  # trainX,trainy are all list
+inputDict = {'arcene': 'arcene', 'sonar': 'sonar'}
+trainX, trainY, predictX, predictY = util.loadData(inputDict['sonar'])  # trainX,trainY,predictX,predictY are all list
 initialization_parameters = [15, 12, 30, 0.05, 50]
 loop_condition = 2  # 最起码要大于lifetime=15的值 ，因为播种一次age才增1
-num_tree_ini = 60  # 初始化时森林中tree的个数
+num_tree_ini = 60  # 初始化时森林中tree的个数 ， 这里可以改进
 initial_forest = []
 area_limit_forest = []
 num_fea_original = mat(trainX).shape[1]  # 特征长度
@@ -28,8 +29,9 @@ class Tree:
         self.age = tree_age
 
 
-
 # 初始化策略(这里上启发式),可以上决策树熵理论，不随机播特征，播数据（或是取子集kmeans++之后播）
+
+
 '''
 fs_num_fea = math.ceil(0.1 * num_fea_original)  # 向前选择的特征个数
 half_fea = math.ceil(0.5 * num_fea_original)
@@ -41,16 +43,11 @@ bs_num_tree_ini = int(num_tree_ini * (1 - ini_forest_const))  # 初始化森林�
 print('fs_num_tree_ini:', fs_num_tree_ini, 'bs_num_tree_ini:', bs_num_tree_ini)
 '''
 
-# 将森林中的树以字符串的形式初始化为全0
-ini_str = ''
-for i in range(num_fea_original):
-    ini_str += '0'
-print('ini_str', ini_str)
-for i in range(num_tree_ini):
-    initial_forest.append(ini_str)
-# 将森林初始化为list为全0的字符串，age为0
-for each_item in initial_forest:
-    instance = Tree(each_item, 0)
+# 将每棵树记录的特征以全0数组的形式初始化
+initial_forest = [0] * num_fea_original
+# 初始化森林
+for each_item in num_tree_ini:
+    instance = Tree(initial_forest, 0)
     area_limit_forest.append(instance)
 print('初始化森林的长度：', len(area_limit_forest))
 for i in range(len(area_limit_forest)):
@@ -77,7 +74,7 @@ def ini_reverse(attri_reverse, area_limit_forest_single_tree):
     temp = Tree(area_limit_forest_single_tree.list, area_limit_forest_single_tree.age)
     for i in range(len(attri_reverse)):
         const_value = 1
-        new_string = index_replace(attri_reverse[i], temp.list, const_value)
+        new_string = tools.index_replace(attri_reverse[i], temp.list, const_value)
         temp.list = new_string
     after_reverse = temp
     return after_reverse

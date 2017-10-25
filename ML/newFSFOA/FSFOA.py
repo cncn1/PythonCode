@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
 import time
 import FSFOATOOL as tools
 from numpy import *
@@ -8,9 +10,9 @@ import copy  # 用于深度拷贝列表eg area_limit_forest_age0=copy.deepcopy(a
 
 # print('feature index', feature)
 # print('原数据集特征数目：',num_fea_original)
-original_acc_knn = tools.train_knn(trainX, trainy,predictX, predicty)
-original_acc_svm = tools.train_svm(trainX, trainy,predictX, predicty)
-original_acc_tree = tools.train_tree(trainX, trainy, predictX, predicty)
+original_acc_knn = tools.train_knn(trainX, trainY,predictX, predictY)
+original_acc_svm = tools.train_svm(trainX, trainY,predictX, predictY)
+original_acc_tree = tools.train_tree(trainX, trainY, predictX, predictY)
 start = time.clock()
 accuracy_max = []  # 存储循环loop_condition中每次的最大准确率
 accuracy_max_feature = []  # 存储循环loop_condition中每次的最大准确率所对应的特征
@@ -108,9 +110,9 @@ while (m < loop_condition):
         if len(fea_list):
             data_sample = read_data_fea(fea_list, trainX)
             data_predict = read_data_fea(fea_list, predictX)
-            # acc.append(train_knn(data_sample, trainy, data_predict, predicty))  # 每棵树的准确率存在acc中
-            # acc.append(train_svm(data_sample, trainy, data_predict, predicty))
-            acc.append(train_tree(data_sample, trainy, data_predict, predicty))
+            # acc.append(train_knn(data_sample, trainY, data_predict, predictY))  # 每棵树的准确率存在acc中
+            # acc.append(train_svm(data_sample, trainY, data_predict, predictY))
+            acc.append(train_tree(data_sample, trainY, data_predict, predictY))
             DR.append(1 - (len(fea_list) / len(feature)))
 
         else:
@@ -175,9 +177,9 @@ print('percent of dimension reduction : ', accuracy_max_DR[accuracy_max_temp_ind
 # print('fea_list_CB:',fea_list_CB)
 # data_sample = read_data_fea(fea_list_CB, trainX)
 # data_predict = read_data_fea(fea_list_CB, predictX)
-# zhunquelvKNN=train_knn(data_sample, trainy, data_predict, predicty)
-# #zhunquelvSVM=train_svm(data_sample, trainy, data_predict, predicty)
-# #zhunquelvTREE=train_tree(data_sample, trainy, data_predict, predicty)
+# zhunquelvKNN=train_knn(data_sample, trainY, data_predict, predictY)
+# #zhunquelvSVM=train_svm(data_sample, trainY, data_predict, predictY)
+# #zhunquelvTREE=train_tree(data_sample, trainY, data_predict, predictY)
 # weidu=1 - (len(fea_list_CB) / len(feature))
 # print('准确率KNN:',zhunquelvKNN)
 # #print('准确率SVM:',zhunquelvSVM)

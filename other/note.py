@@ -79,3 +79,8 @@ print 'a = ', a
 print 'b = ', b
 print 'c = ', c
 print 'd = ', d
+
+# o.3.3 查看变量占用了多少内存
+import sys
+a = '0' * 500
+print sys.getsizeof(a)

@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
 from sklearn import neighbors
 from sklearn import svm
 from numpy import *
@@ -5,14 +7,14 @@ from sklearn import tree
 
 
 # 读取文件，返回list结构
-def loadData(filename):
-    numFeat = len(open(filename).readline().split('\t')) - 1
-    feature = [];
+def loadData(filename, delimiter=','):
+    numFeat = len(open(filename).readline().split(delimiter)) - 1
+    feature = []
     label = []
     fr = open(filename)
     for line in fr.readlines():
         xi = []
-        curline = line.strip().split('\t')
+        curline = line.strip().split(delimiter)
         for i in range(numFeat):
             xi.append(float(curline[i]))
         feature.append(xi)
