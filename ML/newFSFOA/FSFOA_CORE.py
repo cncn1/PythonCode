@@ -17,7 +17,6 @@ def reverse_binary_LSC(vice_verse_attri, area_limit_forest_iniPG):
             continue
     for area_limit_forest_tree in area_limit_forest_iniPG:
         area_limit_forest_tree.age += 1
-
     for tree_age0 in area_limit_forest_age0:
         # print '刚开始时的tree_age0', tree_age0.list, tree_age0.age
         # print '需要反转的属性', vice_verse_attri
@@ -132,20 +131,20 @@ def select_trees(area_limit_forest_iniPG):
 
 
 # Global_seeding（全局播种）
-def reverse_binary_GSC(vice_verse_attri_GSC, candidate_area, num_fea_original):
+def reverse_binary_GSC(vice_verse_attri_GSC, candidate_area):
     after_reverse = []
-    selected_tree_canarea = []  # 从候选区中挑出来进行反转的树
+    selected_tree_area = []  # 从候选区中挑出来进行反转的树
     num_percent_transfer = int(len(candidate_area) * initialization_parameters[3])
     print 'num_percent_transfer', num_percent_transfer
     j = 0
     while j < num_percent_transfer:
         y = random.randint(0, len(candidate_area))
-        if candidate_area[y] not in selected_tree_canarea:
-            selected_tree_canarea.append(candidate_area[y])
+        if candidate_area[y] not in selected_tree_area:
+            selected_tree_area.append(candidate_area[y])
             j = j + 1
         else:
             continue
-    for selected_tree in selected_tree_canarea:
+    for selected_tree in selected_tree_area:
         selected_tree.list = util.revers(selected_tree.list, vice_verse_attri_GSC)
         after_reverse.append(deepcopy(selected_tree))
     return after_reverse

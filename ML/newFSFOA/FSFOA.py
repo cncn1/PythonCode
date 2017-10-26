@@ -99,8 +99,8 @@ while m < loop_condition:
     print('updating....')
     acc = []
     DR = []
-    for i in xrange(len(area_limit_forest_iniPG)):
-        fea_list = numtofea(area_limit_forest_iniPG[i].list, feature)
+    for tree_update in area_limit_forest_iniPG:
+        fea_list = numtofea(tree_update.list, feature)
         if len(fea_list):
             data_sample = read_data_fea(fea_list, trainX)
             data_predict = read_data_fea(fea_list, predictX)
