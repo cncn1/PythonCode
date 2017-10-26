@@ -1,7 +1,9 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
 import time
 from FSFOATOOL import *
 from numpy import *
-from  FSFOA_CORE import *
+from FSFOA_CORE import *
 from PSO_initial import *
 import itertools  # 处理list的嵌套问题
 import \
@@ -22,7 +24,7 @@ candidate_area_growing = []
 candidate_area_temp = []
 m = 0
 while (m < loop_condition):
-    print('￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥第', m + 1, '次循环￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥￥')
+    print '@@@@@@@@@@@@@@@第@@@@@@@@@@@@@', m + 1, '@@@@@@@@@@@@@@@@次循环@@@@@@@@@@@@@@@@'
     m += 1
     vice_verse_attri = []
     j = 0

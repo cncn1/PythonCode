@@ -1,11 +1,13 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
 import math
 from numpy import *
 from FSFOATOOL import *
 
 loop_condition = 2  # 最起码要大于lifetime=15的值 ，因为播种一次age才曾1
 trainX, trainy = loadData(
-    'C:/Users/Administrator/Desktop/install file/processed_data/arcene_train.txt')  # trainX,trainy are all list
-predictX, predicty = loadData('C:/Users/Administrator/Desktop/install file/processed_data/arcene_valid.txt')
+    'D:/LabDatas/processed_data/sonar/train_1.txt')  # trainX,trainy are all list
+predictX, predicty = loadData('D:/LabDatas/processed_data/sonar/predict_1.txt')
 initialization_parameters = [15, 12, 30, 0.05, 50]
 # trainX,trainy=loadData('C:/Users/Administrator/Desktop/install file/processed_data/wine/train_1.txt')#trainX,trainy are all list
 # predictX,predicty=loadData('C:/Users/Administrator/Desktop/install file/processed_data/wine/predict_1.txt')
@@ -33,7 +35,7 @@ fs_num_fea = math.ceil(0.1 * num_fea_original)  # 向前选择的特征个数
 half_fea = math.ceil(0.5 * num_fea_original)
 bs_num_fea = random.randint(half_fea, num_fea_original - 1)  # 向后选择的特征个数，这个是随机选择的
 print('fs_num_fea,half_fea,bs_num_fea:', fs_num_fea, half_fea, bs_num_fea)
-ini_forest_const = 2 / 3
+ini_forest_const = 2.0 / 3
 fs_num_tree_ini = int(num_tree_ini * (ini_forest_const))  # 初始化森林时向前选择的树的个数
 bs_num_tree_ini = int(num_tree_ini * (1 - ini_forest_const))  # 初始化森林时向后选择的树的个数
 print('fs_num_tree_ini:', fs_num_tree_ini, 'bs_num_tree_ini:', bs_num_tree_ini)
