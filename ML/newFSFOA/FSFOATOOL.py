@@ -22,11 +22,12 @@ def loadData(filename, delimiter=','):
     return feature, label
 
 
+# 根据所选特征选择子数据集
 def read_data_fea(fea_list, dataset):
     dataMat = mat(dataset)
     col = dataMat.shape[0]  # 行号
     data_sample = []
-    for i in range(col):
+    for i in xrange(col):
         col_i = []
         for j in fea_list:
             col_i.append(dataMat[i, j])
@@ -37,7 +38,7 @@ def read_data_fea(fea_list, dataset):
 # 在指定角标索引的位置将字符串进行替换
 def index_replace(index, replace_string, const_value):
     new_string = ''
-    for i in range(len(replace_string)):
+    for i in xrange(len(replace_string)):
         if i != index:
             new_string += replace_string[i]
         else:
@@ -92,8 +93,8 @@ def train_tree(data_train, label_train, data_pre, label_pre):
 
 def numtofea(num, fea_list):
     feature = []
-    for i in range(len(num)):
-        if num[i] == '1':
+    for i in xrange(len(num)):
+        if num[i] == 1:
             feature.append(fea_list[i])
         else:
             continue

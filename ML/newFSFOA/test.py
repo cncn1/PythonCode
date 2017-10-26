@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 import random
 import sys
-
+import numpy as np
 
 
 def index_replace(index, replace_string, const_value):
@@ -35,6 +35,27 @@ def revers(index):
     print s
 
 
+# 删除方法
+def delete_together(delete_index, a):
+    for i in delete_index:
+        a[i] = 'k'
+    for i in xrange(len(delete_index)):
+        a.remove('k')
+
+
+class Tree:
+    def __init__(self, tree_list, tree_age):
+        self.list = tree_list
+        self.age = tree_age
+
+
 if __name__ == '__main__':
-    a = 5
-    print type(a)
+    index = [1, 2]
+    dataMap = np.array([[1, 4, 1, 4],
+                        [2, 5, 2, 5],
+                        [3, 6, 3, 6]])
+    dataSim = []
+    print dataMap[:, 2]
+    for i in index:
+        dataSim.append(dataMap[:, i])
+    print np.mat(dataSim).T

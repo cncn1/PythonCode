@@ -6,7 +6,7 @@ from copy import deepcopy
 # 变量定义
 inputDict = {'arcene': 'arcene', 'sonar': 'sonar'}
 trainX, trainY, predictX, predictY = util.loadData(inputDict['sonar'])  # trainX,trainY,predictX,predictY are all list
-initialization_parameters = [15, 12, 30, 0.05, 50]
+initialization_parameters = [15, 12, 30, 0.05, 50]  # life time, LSC局部播种特征数, GSC全局播种特征数, transfer rate， area
 loop_condition = 2  # 最起码要大于lifetime=15的值 ，因为播种一次age才增1
 num_tree_ini = 60  # 初始化时森林中tree的个数 ， 这里可以改进
 initial_forest = []

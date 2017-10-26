@@ -17,7 +17,7 @@ accuracy_max = []  # 存储循环loop_condition中每次的最大准确率
 accuracy_max_feature = []  # 存储循环loop_condition中每次的最大准确率所对应的特征
 accuracy_max_DR = []  # 存储循环loop_condition中每次的最大准确率所对应的维度缩减
 
-candidate_area = []
+# candidate_area = []
 candidate_area_growing = []
 candidate_area_temp = []
 m = 0
@@ -37,44 +37,45 @@ while m < loop_condition:
     print '增加新树前area_limit_forest_iniPG的长度', len(area_limit_forest_iniPG)
 
     print '########################################第', m, 'local seeding播种开始###########################################'
-    new_tree_nestification = []  # reverse_binary函数调用后返回的list会有嵌套
-    new_tree_nonestification = []
-    new_tree_nestification.append(reverse_binary(vice_verse_attri, area_limit_forest_iniPG))
-    new_tree_nonestification = list(itertools.chain.from_iterable(new_tree_nestification))
-    print 'new_tree_nonestification增长出新树的长度', len(new_tree_nonestification)
-    for i in range(len(new_tree_nonestification)):
-        print '新生成的树', new_tree_nonestification[i].list, new_tree_nonestification[i].age
-    for i in range(len(area_limit_forest_iniPG)):
-        print '插入新树之前area_limit_forest_iniPG的样子', area_limit_forest_iniPG[i].list, area_limit_forest_iniPG[i].age
+    new_tree_nestification = reverse_binary_LSC(vice_verse_attri, area_limit_forest_iniPG)
+    # []  # reverse_binary函数调用后返回的list会有嵌套
+    # new_tree_nonestification = []
+    # new_tree_nestification.append(reverse_binary(vice_verse_attri, area_limit_forest_iniPG))
+    # new_tree_nonestification = list(itertools.chain.from_iterable(new_tree_nestification))
+    print 'new_tree_nestification局部播种后新生成的树总数', len(new_tree_nestification)
+    # for i in new_tree_nestification:
+    #     print '新生成的树', i.list, i.age
+    # for j in area_limit_forest_iniPG:
+    #     print '插入新树之前area_limit_forest_iniPG的样子', j.list, j.age
     # 向area_limit_forest_iniPG里插入新树
-    for each_item in new_tree_nonestification:
-        area_limit_forest_iniPG.append(each_item)
-    print '加入新树后area_limit_forest_iniPG的长度', len(area_limit_forest_iniPG)
-    for i in range(len(area_limit_forest_iniPG)):
-        print('area_limit_forest_iniPG', area_limit_forest_iniPG[i].list, area_limit_forest_iniPG[i].age)
-
+    for each_item in new_tree_nestification:
+        area_limit_forest_iniPG.append(deepcopy(each_item))
     print '########################################第', m, 'local seeding播种结束######################################'
 
-    print '#######################################第', m, 'population limiting 放入候选区开始###############################'
-    candidate_area_growing.append(select_trees(area_limit_forest_iniPG))
+    print '########################################第', m, 'population limiting放入候选区开始##########################'
+    # 获取候选区的树
+    candidate_area_growing = select_trees(area_limit_forest_iniPG)
     # new_tree_nonestification = list(itertools.chain.from_iterable(new_tree_nestification))
-    candidate_area_temp = list(itertools.chain.from_iterable(candidate_area_growing))
+    # candidate_area_temp = list(itertools.chain.from_iterable(candidate_area_growing))
     # for i in range(len(candidate_area_temp)):
     #     if isinstance(candidate_area_temp[i].list,str):
     #         candidate_area_temp[i].list=int(candidate_area_temp[i].list,2)
     #     else:
     #         continue
-    candidate_area = candidate_area_temp
-    print '候选区candidate_area的长度：', len(candidate_area)
-    for i in range(len(candidate_area)):
-        print '候选区candidate_area中准确率最小前num_extra颗树的list值，age值：', candidate_area[i].list, candidate_area[i].age
+    # candidate_area = candidate_area_temp
+    print '候选区candidate_area的长度：', len(candidate_area_growing)
+    for candidate_tree in candidate_area_growing:
+        print '候选区candidate_area中准确率最小前num_extra颗树的list值，age值：', candidate_tree.list, candidate_tree.age
     print '移除多余树area_limit_forest_iniPG的长度', len(area_limit_forest_iniPG)
     for i in range(len(area_limit_forest_iniPG)):
         print'移除多余树area_limit_forest_iniPG的list值，age值：', area_limit_forest_iniPG[i].list, area_limit_forest_iniPG[i].age
     print '#######################################第', m, 'population limiting 放入候选区结束#################################'
     print '#######################################第', m, 'Global seeding GSC开始#############################################'
+    # 原始论文从候选区随机选择若干棵树全局播种,这里可以改进上启发式
+    '''
+    '''
     # 只需要根据GSC值完成候选区5%的反转即可
-    vice_verse_attri_GSC = []
+    vice_verse_attri_GSC = []   # 全局播种特征的集合
     j = 0
     while j < initialization_parameters[2]:
         y = random.randint(0, num_fea_original)
@@ -83,22 +84,22 @@ while m < loop_condition:
             j = j + 1
         else:
             continue
-    print '全局播种时选出的需要反转属性', vice_verse_attri_GSC
-    after_GSC_reverse = []  # 存放经过reverse_binary_GSC反转后的结果
-    after_GSC_reverse = reverse_binary_GSC(vice_verse_attri_GSC, candidate_area, num_fea_original)
-    for i in range(len(after_GSC_reverse)):  # 做测试用 ，可以删除
-        print '所有属性一起反转后的样子：', after_GSC_reverse[i].list, after_GSC_reverse[i].age
+    # after_GSC_reverse存放经过reverse_binary_GSC反转后的结果
+    after_GSC_reverse = reverse_binary_GSC(vice_verse_attri_GSC, candidate_area_growing, num_fea_original)
+    # for i in range(len(after_GSC_reverse)):  # 做测试用 ，可以删除
+    #     print '所有属性一起反转后的样子：', after_GSC_reverse[i].list, after_GSC_reverse[i].age
+    # 将全局播种后的树加到森林中
     area_limit_forest_iniPG += after_GSC_reverse
-    print '加入全局播种后的area_limit_forest_iniPG的长度：', len(area_limit_forest_iniPG)
-    for i in range(len(area_limit_forest_iniPG)):  # 做测试用 ，可以删除
-        print '加入全局播种后的area_limit_forest_iniPG：', area_limit_forest_iniPG[i].list, area_limit_forest_iniPG[i].age
+    # print '加入全局播种后的area_limit_forest_iniPG的长度：', len(area_limit_forest_iniPG)
+    # for i in range(len(area_limit_forest_iniPG)):  # 做测试用 ，可以删除
+    #     print '加入全局播种后的area_limit_forest_iniPG：', area_limit_forest_iniPG[i].list, area_limit_forest_iniPG[i].age
     print '#######################################第', m, 'Global seeding GSC结束################################################'
 
     print '#######################################第', m, 'update optimal更新最优开始#############################################'
     print('updating....')
     acc = []
     DR = []
-    for i in range(len(area_limit_forest_iniPG)):
+    for i in xrange(len(area_limit_forest_iniPG)):
         fea_list = numtofea(area_limit_forest_iniPG[i].list, feature)
         if len(fea_list):
             data_sample = read_data_fea(fea_list, trainX)
@@ -107,13 +108,12 @@ while m < loop_condition:
             # acc.append(train_svm(data_sample, trainY, data_predict, predictY))
             acc.append(train_tree(data_sample, trainY, data_predict, predictY))
             DR.append(1 - (len(fea_list) / len(feature)))
-
         else:
             acc.append(0)
             DR.append(0)
     acc_max = max(acc)
     acc_max_index = acc.index(acc_max)
-    for i in range(len(acc)):
+    for i in xrange(len(acc)):
         if (acc[i] == acc_max) and (DR[i] > DR[acc_max_index]):
             acc_max_index = i
         else:
