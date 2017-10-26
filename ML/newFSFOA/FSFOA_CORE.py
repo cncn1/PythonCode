@@ -2,48 +2,37 @@
 # -*- coding:utf-8 -*-
 from FSFOATOOL import *
 from PSO_initial import *
+import util
 
 
-# local_seeding
-def reverse_binary(vice_verse_attri, area_limit_forest_iniPG):  # area_limit_forest_age0[i]
+# 局部播种
+def reverse_binary(vice_verse_attri, area_limit_forest_iniPG):
     after_reverse = []
     area_limit_forest_age0 = []
-    for i in xrange(len(area_limit_forest_iniPG)):
-        if area_limit_forest_iniPG[i].age == 0:
-            area_limit_forest_age0.append(deepcopy(area_limit_forest_iniPG[i]))  # 确保原始树送入reverse_binary反转产生新树后，原始树的age值加1。
+    for area_limit_forest_tree in area_limit_forest_iniPG:
+        if area_limit_forest_tree.age == 0:
+            # 将森林中age为0的树放入area_limit_forest_age0准备局部播种。
+            area_limit_forest_age0.append(deepcopy(area_limit_forest_tree))
         else:
             continue
-    # for i in range(len(area_limit_forest_age0)):
-    #     print('age0的age是：',areax_limit_forest_age0[i].list,area_limit_forest_age0[i].age,len(area_limit_forest_age0))
-    for i in xrange(len(area_limit_forest_iniPG)):
-        area_limit_forest_iniPG[i].age += 1
-    for i in xrange(len(area_limit_forest_age0)):
-        print '+1后age0的age是：', area_limit_forest_age0[i].list, area_limit_forest_age0[i].age, len(area_limit_forest_age0)
-    for i in xrange(len(area_limit_forest_age0)):
-        print '刚开始时的area_limit_forest_age0[', i, '].list和.age的值', area_limit_forest_age0[i].list,area_limit_forest_age0[i].age
-        # print('area_limit_forest_age0[',i,'].age',area_limit_forest[i].age)
-        print '需要反转的属性', vice_verse_attri
-        for vice_index in xrange(vice_verse_attri):
-            temp = Tree(area_limit_forest_age0[i].list, 0)
-            # 属性反转
-            temp.list[vice_index] =
+    for area_limit_forest_tree in area_limit_forest_iniPG:
+        area_limit_forest_tree.age += 1
 
-            if temp.list[vice_verse_attri[k]] == '0':
-                const_value = 1
-                new_string = index_replace(vice_verse_attri[k], temp.list, const_value)
-                temp.list = new_string
-            # temp.list[vice_verse_attri[i]].re='1'
-            # print('haha')
-            # print('temp.list是不是字符串类型',isinstance(temp.list,str))temp.list是字符串类型
-            else:
-                const_value = 0
-                new_string = index_replace(vice_verse_attri[k], temp.list, const_value)
-                temp.list = new_string
-            # temp.list[vice_verse_attri[i]] == '0'
-            # temp.list=int(temp.list,2)
-            # print('temp的list值和age值',temp.list,temp.age)
-            after_reverse.append(temp)
-            # area_limit_forest_age0[i].list=int(str0,2)
+    # for tree_age0 in area_limit_forest_age0:  这么写全局播种了
+    #     print '刚开始时的tree_age0', tree_age0.list,tree_age0.age
+    #     print '需要反转的属性', vice_verse_attri
+    #     tree_age0.list = util.revers(tree_age0.list, vice_verse_attri)
+    #     print '翻转后的', tree_age0.list, tree_age0.age
+    #     after_reverse.append(deepcopy(tree_age0))
+
+    for tree_age0 in area_limit_forest_age0:
+        print '刚开始时的tree_age0', tree_age0.list, tree_age0.age
+        print '需要反转的属性', vice_verse_attri
+        for each_attri in vice_verse_attri:
+            temp_tree_age0 = deepcopy(tree_age0)
+            temp_tree_age0.list = util.revers(temp_tree_age0.list, each_attri, 0)
+            # print '翻转后的', temp_tree_age0.list, temp_tree_age0.age
+            after_reverse.append(deepcopy(temp_tree_age0))
     return after_reverse
 
 

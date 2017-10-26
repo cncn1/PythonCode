@@ -36,7 +36,5 @@ def revers(index):
 
 
 if __name__ == '__main__':
-    for i in xrange(1000):
-        s = random.randint(0,3)
-        print s
-    revers(6)
+    a = 5
+    print type(a)
