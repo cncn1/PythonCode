@@ -2,9 +2,8 @@
 # -*- coding:utf-8 -*-
 from sklearn import neighbors
 from sklearn import svm
-from numpy import *
 from sklearn import tree
-
+from numpy import *
 
 # 读取文件，返回list结构
 def loadData(filename, delimiter=','):
@@ -60,11 +59,11 @@ def acc_pre(label_pre, label_train):
     for i in range(len(label_pre)):
         if label_pre[i] != label_train[i]:
             num += 1
-    return (1 - num / len(label_train))
+    return (1 - 1.0 * num / len(label_train))
 
 
-def train_knn(data_train, label_train, data_pre, label_pre):
-    clf = neighbors.KNeighborsClassifier(n_neighbors=1)  # 创建分类器对象
+def train_knn(data_train, label_train, data_pre, label_pre, k=1):
+    clf = neighbors.KNeighborsClassifier(n_neighbors=k)  # 创建分类器对象
     clf.fit(data_train, label_train)  # 用训练数据拟合分类器模型搜索
     predict = clf.predict(data_pre)
     acc = acc_pre(predict, label_pre)  # 预测标签和ground_true标签对比 算准确率
