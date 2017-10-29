@@ -2,7 +2,8 @@
 # -*- coding:utf-8 -*-
 import datetime
 import ADAFSFOA_CORE
-
+import numpy as np
+from sklearn.decomposition import PCA
 # 读取文件，返回list结构
 def loadDataBase(filename, delimiter=','):
     numFeat = len(open(filename).readline().split(delimiter)) - 1
@@ -114,7 +115,30 @@ def print_to_file(algorithmName, dataSetName, labName, accuracy_mean, DR_mean):
 
 
 
+def pca(X,k):#k is the components you want
+    #mean of each feature
+    n_samples, n_features = X.shape
+    mean=np.array([np.mean(X[:,i]) for i in range(n_features)])
+    #normalization
+    norm_X=X-mean
+    #scatter matrix
+    scatter_matrix=np.dot(np.transpose(norm_X),norm_X)
+    #Calculate the eigenvectors and eigenvalues
+    eig_val, eig_vec = np.linalg.eig(scatter_matrix)
+    eig_pairs = [(np.abs(eig_val[i]), eig_vec[:,i]) for i in range(n_features)]
+    # sort eig_vec based on eig_val from highest to lowest
+    eig_pairs.sort(reverse=True)
+    # select the top k eig_vec
+    feature=np.array([ele[1] for ele in eig_pairs[:k]])
+    #get new data
+    data=np.dot(norm_X,np.transpose(feature))
+    return data
+
 if __name__ == '__main__':
+    # X = np.array([[-1, 1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
+    # print len(pca(X, 1))
+
+
     # 变量定义
     inputDict = {'ionosphere': ['ionosphere', [1, 1, 10, 2, 1, 2, 37, 1, 10]], 'cleveland': ['cleveland', [37, 1, 1]],
                  'wine': ['wine', [1, 1, 10, 2, 1, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 1, 2, 37, 1, 10]],
@@ -133,5 +157,8 @@ if __name__ == '__main__':
             for times in xrange(labTimes):
                 for eachfile in xrange(fileNum):
                     trainX, trainY, predictX, predictY, loop_condition, initialization_parameters = loadData(dataSet[0], labName, eachfile + 1)
-                    optimalFeature = ADAFSFOA_CORE.chooseBestFeatureToSplit(trainX)
-                    print optimalFeature
+                    pca = PCA(n_components='mle')
+                    pca.fit(np.array(trainX))
+                    print pca.explained_variance_ratio_
+                    # optimalFeature = ADAFSFOA_CORE.chooseBestFeatureToSplit(trainX)
+                    # print optimalFeature

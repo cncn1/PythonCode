@@ -21,14 +21,19 @@ def ini_reverse(attri_reverse, area_limit_forest_single_tree):
 
 
 # 初始化，构造初始森林
-def ini_PG(forest_init):
+def ini_PG(forest_init, optimalFeature=None):
     area_limit_forest_init = []
     for init in xrange(len(forest_init)):
         init_feature_num = random.randint(0, num_fea_original)
         attri_reverse = random_form(init_feature_num, num_fea_original)
         tree = ini_reverse(attri_reverse, forest_init[init])
         area_limit_forest_init.append(deepcopy(tree))
-    return area_limit_forest_init
+    if optimalFeature == None:
+        return area_limit_forest_init
+    else:
+        for adaTree in area_limit_forest_init:
+            adaTree.list[optimalFeature] = 1
+        return area_limit_forest_init
 
 
 def FSFOA(area_limit_forest_iniPG):
@@ -64,7 +69,7 @@ def FSFOA(area_limit_forest_iniPG):
         
         
         '''
-        vice_verse_attri_GSC =  random_form(initialization_parameters[2], num_fea_original)  # 全局播种特征的集合
+        vice_verse_attri_GSC = random_form(initialization_parameters[2], num_fea_original)  # 全局播种特征的集合
         after_GSC_reverse = reverse_binary_GSC(initialization_parameters, vice_verse_attri_GSC, candidate_area_growing)
         area_limit_forest_iniPG += after_GSC_reverse
         # print '#######################################第', m, 'Global seeding GSC结束##################################'
@@ -135,8 +140,9 @@ def FSFOA(area_limit_forest_iniPG):
     # print 'J48准确率:', zhunquelvTREE
     # print '维度缩减：', weidu
 
+
 # optimalFeature 为根据信息熵挑出的最优特征
-def ADAFSFOA(area_limit_forest_iniPG, optimalFeature):
+def ADAFSFOA(area_limit_forest_iniPG):
     # original_acc_knn = train_knn(trainX, trainY, predictX, predictY, 3)
     # original_acc_svm = train_svm(trainX, trainY, predictX, predictY)
     # original_acc_tree = train_tree(trainX, trainY, predictX, predictY)
@@ -263,7 +269,8 @@ if __name__ == '__main__':
                 for eachfile in xrange(fileNum):
                     count += 1
                     # trainX,trainY,predictX,predictY are all list
-                    trainX, trainY, predictX, predictY, loop_condition, initialization_parameters = util.loadData(dataSet[0], labName, eachfile + 1)
+                    trainX, trainY, predictX, predictY, loop_condition, initialization_parameters = util.loadData(
+                        dataSet[0], labName, eachfile + 1)
                     # TODO
                     num_tree_ini = 50  # 初始化时森林中tree的个数 ， 这里可以改进
                     initial_forest = []
@@ -272,28 +279,26 @@ if __name__ == '__main__':
                     feature = []  # 特征集合索引,特征集合的角标
                     for i in range(num_fea_original):
                         feature.append(i)
-                    # TODO 初始化策略(这里上启发式),可以上决策树熵理论，不随机播特征，播数据（或是取子集kmeans++之后播）
-                    '''
-                
-                
-                
-                
-                
-                    '''
-                    # 改进一：根据信息熵理论，挑出具有最好用于划分数据集的特征
-                    optimalFeature = ada.chooseBestFeatureToSplit(trainX)
-
                     # 将每棵树记录的特征以全0数组的形式初始化
                     initial_forest = [0] * num_fea_original
                     # 初始化森林
                     area_limit_forest = [deepcopy(Tree(initial_forest, 0)) for row in xrange(num_tree_ini)]
-                    area_limit_forest_iniPG = ini_PG(area_limit_forest)
-                    FSFOA_iniPG = deepcopy(area_limit_forest_iniPG)
-                    ADAFSFOA_iniPG = deepcopy(area_limit_forest_iniPG)
+                    FSFOA_iniPG = ini_PG(area_limit_forest)
                     FSFOA_accuracy, FSFOA_DR = FSFOA(FSFOA_iniPG)
                     FSFOA_accuracy_total += FSFOA_accuracy
                     FSFOA_DR_total += FSFOA_DR
-                    ADAFSFOA_accuracy, ADAFSFOA_DR = ADAFSFOA(ADAFSFOA_iniPG, optimalFeature)
+                    # TODO 初始化策略(这里上启发式),可以上决策树熵理论，不随机播特征，播数据（或是取子集kmeans++之后播）
+                    '''
+
+
+
+
+
+                    '''
+                    # 改进一：根据信息熵理论，挑出具有最好用于划分数据集的特征
+                    optimalFeature = ada.chooseBestFeatureToSplit(trainX)
+                    ADAFSFOA_iniPG = ini_PG(area_limit_forest, optimalFeature=optimalFeature)
+                    ADAFSFOA_accuracy, ADAFSFOA_DR = ADAFSFOA(ADAFSFOA_iniPG)
                     ADAFSFOA_accuracy_total += ADAFSFOA_accuracy
                     ADAFSFOA_DR_total += ADAFSFOA_DR
             FSFOA_accuracy_mean = FSFOA_accuracy_total / count
