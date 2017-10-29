@@ -1,24 +1,45 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+from numpy import mat
+from numpy import random
 from sklearn import neighbors
 from sklearn import svm
 from sklearn import tree
-from numpy import *
 
-# 读取文件，返回list结构
-def loadData(filename, delimiter=','):
-    numFeat = len(open(filename).readline().split(delimiter)) - 1
+
+# 根据选出的特征返回对应的特征编号
+def numtofea(num, fea_list):
     feature = []
-    label = []
-    fr = open(filename)
-    for line in fr.readlines():
-        xi = []
-        curline = line.strip().split(delimiter)
-        for i in range(numFeat):
-            xi.append(float(curline[i]))
-        feature.append(xi)
-        label.append(float(curline[-1]))
-    return feature, label
+    for i in xrange(len(num)):
+        if num[i] == 1:
+            feature.append(fea_list[i])
+        else:
+            continue
+    return feature
+
+
+# 数组反转方法,类似模2除,针对对应特征0和1的反转方法,flag=1时反转所给定列表中的全部特征,flag不等于1时反转给定位置的特征
+def revers(s, indexList, flag=1):
+    if flag == 1:
+        for index in indexList:
+            s[index] = (s[index] + 1) % 2
+    else:
+        s[indexList] = (s[indexList] + 1) % 2
+    return s
+
+
+# 从feature_length个特征中产生一组随机数(num_random个)
+def random_form(num_random, feature_length):
+    random_num = []
+    j = 0
+    while j < num_random:
+        y = random.randint(0, feature_length)
+        if y not in random_num:
+            random_num.append(y)
+            j += 1
+        else:
+            continue
+    return random_num
 
 
 # 根据所选特征选择子数据集
@@ -59,7 +80,7 @@ def acc_pre(label_pre, label_train):
     for i in range(len(label_pre)):
         if label_pre[i] != label_train[i]:
             num += 1
-    return (1 - 1.0 * num / len(label_train))
+    return 1.0 - 1.0 * num / len(label_train)
 
 
 def train_knn(data_train, label_train, data_pre, label_pre, k=1):
@@ -88,13 +109,3 @@ def train_tree(data_train, label_train, data_pre, label_pre):
     predict = clf.predict(data_pre)
     acc = acc_pre(predict, label_pre)
     return acc
-
-
-def numtofea(num, fea_list):
-    feature = []
-    for i in xrange(len(num)):
-        if num[i] == 1:
-            feature.append(fea_list[i])
-        else:
-            continue
-    return feature

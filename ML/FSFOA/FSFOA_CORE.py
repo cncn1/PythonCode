@@ -1,8 +1,7 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
+from copy import deepcopy
 from FSFOATOOL import *
-from PSO_initial import *
-import util
 
 
 # 局部播种
@@ -22,7 +21,7 @@ def reverse_binary_LSC(vice_verse_attri, area_limit_forest_iniPG):
         # print '需要反转的属性', vice_verse_attri
         for each_attri in vice_verse_attri:
             temp_tree_age0 = deepcopy(tree_age0)
-            temp_tree_age0.list = util.revers(temp_tree_age0.list, each_attri, 0)
+            temp_tree_age0.list = revers(temp_tree_age0.list, each_attri, 0)
             # print '翻转后的', temp_tree_age0.list, temp_tree_age0.age
             after_reverse.append(deepcopy(temp_tree_age0))
     return after_reverse
@@ -81,6 +80,6 @@ def reverse_binary_GSC(initialization_parameters, vice_verse_attri_GSC, candidat
         else:
             continue
     for selected_tree in selected_tree_area:
-        selected_tree.list = util.revers(selected_tree.list, vice_verse_attri_GSC)
+        selected_tree.list = revers(selected_tree.list, vice_verse_attri_GSC)
         after_reverse.append(deepcopy(selected_tree))
     return after_reverse
