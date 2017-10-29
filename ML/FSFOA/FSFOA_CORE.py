@@ -28,21 +28,21 @@ def reverse_binary_LSC(vice_verse_attri, area_limit_forest_iniPG):
 
 
 # 原始更新策略
-def select_trees(trainX, trainY, predictX, predictY, initialization_parameters, feature, area_limit_forest_iniPG):
+def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, area_limit_forest_iniPG):
     selected_trees = []  # 候选森林中的树
     acc = []
     acc_omit_index = []  # 存的是acc中前num_extra的最小值的角标
     age_exceed_lifetime_index = []  # age值超过lifetime的索引号
     # 将森林中年龄值大于年龄上限的树从森林中移除，放入候选森林
     for i in xrange(len(area_limit_forest_iniPG)):
-        if area_limit_forest_iniPG[i].age > [0]:
+        if area_limit_forest_iniPG[i].age > life_time:
             selected_trees.append(area_limit_forest_iniPG[i])
             age_exceed_lifetime_index.append(i)
     delete_together(age_exceed_lifetime_index, area_limit_forest_iniPG)
     # 如果原森林中剩余树的数量仍超出区域上限值，则根据树的适应度值（分类准确率）从小到大依次移除多余的树，并将这些移除的树放到候选森林中
-    if len(area_limit_forest_iniPG) > initialization_parameters[4]:
+    if len(area_limit_forest_iniPG) > area:
         # 遍历area_limit_forest_iniPG中剩下的树带入分类器（eg knn）算分类准确率，准确率低的放入候选区直至area_limit_forest_iniPG的长度为are_limit的值为止
-        num_extra = len(area_limit_forest_iniPG) - initialization_parameters[4]
+        num_extra = len(area_limit_forest_iniPG) - area
         for limit_tree in area_limit_forest_iniPG:
             fea_list = numtofea(limit_tree.list, feature)
             if len(fea_list) > 0:
@@ -67,10 +67,10 @@ def select_trees(trainX, trainY, predictX, predictY, initialization_parameters, 
 
 
 # Global_seeding（全局播种）
-def reverse_binary_GSC(initialization_parameters, vice_verse_attri_GSC, candidate_area):
+def reverse_binary_GSC(transferRate, vice_verse_attri_GSC, candidate_area):
     after_reverse = []
     selected_tree_area = []  # 从候选区中挑出来进行反转的树
-    num_percent_transfer = int(len(candidate_area) * initialization_parameters[3])
+    num_percent_transfer = int(len(candidate_area) * transferRate)
     j = 0
     while j < num_percent_transfer:
         y = random.randint(0, len(candidate_area))

@@ -28,7 +28,7 @@ def ini_PG(forest_init, optimalFeature=None):
         attri_reverse = random_form(init_feature_num, num_fea_original)
         tree = ini_reverse(attri_reverse, forest_init[init])
         area_limit_forest_init.append(deepcopy(tree))
-    if optimalFeature == None:
+    if optimalFeature is None:
         return area_limit_forest_init
     else:
         for adaTree in area_limit_forest_init:
@@ -58,7 +58,7 @@ def FSFOA(area_limit_forest_iniPG):
 
         # print '#######################################第', m, 'population limiting放入候选区开始######################'
         # 获取候选区的树
-        candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters, feature,
+        candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters[4], feature,
                                               area_limit_forest_iniPG)
         # print '#######################################第', m, 'population limiting 放入候选区结束######################'
         # print '#######################################第', m, 'Global seeding GSC开始##################################'
@@ -70,7 +70,7 @@ def FSFOA(area_limit_forest_iniPG):
         
         '''
         vice_verse_attri_GSC = random_form(initialization_parameters[2], num_fea_original)  # 全局播种特征的集合
-        after_GSC_reverse = reverse_binary_GSC(initialization_parameters, vice_verse_attri_GSC, candidate_area_growing)
+        after_GSC_reverse = reverse_binary_GSC(initialization_parameters[3], vice_verse_attri_GSC, candidate_area_growing)
         area_limit_forest_iniPG += after_GSC_reverse
         # print '#######################################第', m, 'Global seeding GSC结束##################################'
 
@@ -126,7 +126,7 @@ def FSFOA(area_limit_forest_iniPG):
     return accuracy, DR
 
 
-    # print '#########将改进后的算法所算出的特征子集字符串直接带入分类器，得到相同的准确率即实验具备可重复性。****#***'
+    # print '#########将改进后的算法所算出的特征子集字符串直接带入分类器，得到相同的准确率即实验具备可重复性。#########'
     # fea_list_CB = numtofea(optimal_feature_subset, feature)
     # print 'fea_list_CB:', fea_list_CB
     # data_sample = read_data_fea(fea_list_CB, trainX)
@@ -150,6 +150,7 @@ def ADAFSFOA(area_limit_forest_iniPG):
     accuracy_max = []  # 存储循环loop_condition中每次的最大准确率
     accuracy_max_feature = []  # 存储循环loop_condition中每次的最大准确率所对应的特征
     accuracy_max_DR = []  # 存储循环loop_condition中每次的最大准确率所对应的维度缩减
+    GSC = min((2 + 2 * loop_condition), int(num_fea_original * 0.5))  # 用模拟退火启发式的方法，可以让GSC有更广泛的搜索空间
     m = 0
     while m < loop_condition:
         # print '****************************第', m + 1, '次循环*********************'
@@ -163,10 +164,9 @@ def ADAFSFOA(area_limit_forest_iniPG):
 
         # print '#######################################第', m, 'population limiting放入候选区开始######################'
         # 获取候选区的树
-        candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters, feature,
-                                              area_limit_forest_iniPG)
-        # print '#######################################第', m, 'population limiting 放入候选区结束######################'
-        # print '#######################################第', m, 'Global seeding GSC开始##################################'
+        candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters[0], initialization_parameters[4], feature, area_limit_forest_iniPG)
+        # print '#######################################第', m, 'population limiting 放入候选区结束#####################'
+        # print '#######################################第', m, 'Global seeding GSC开始#################################'
         # TODO 原始论文从候选区随机选择若干棵树全局播种,这里可以改进上启发式
         '''
         # 只需要根据GSC值完成候选区5%的反转即可(这里可以改进)
@@ -174,8 +174,11 @@ def ADAFSFOA(area_limit_forest_iniPG):
 
 
         '''
-        vice_verse_attri_GSC = random_form(initialization_parameters[2], num_fea_original)  # 全局播种特征的集合
-        after_GSC_reverse = reverse_binary_GSC(initialization_parameters, vice_verse_attri_GSC, candidate_area_growing)
+        # GSC受退火函数启发
+        GSC = ada.T(GSC, m)
+        vice_verse_attri_GSC = random_form(GSC, num_fea_original)  # 全局播种特征的集合
+        # initialization_parameters[3] 是转化率，这个为什么不需要上启发式函数，个人认为是因为候选区中的树会越来越多
+        after_GSC_reverse = reverse_binary_GSC(initialization_parameters[3], vice_verse_attri_GSC, candidate_area_growing)
         area_limit_forest_iniPG += after_GSC_reverse
         # print '#######################################第', m, 'Global seeding GSC结束##################################'
 
@@ -210,12 +213,14 @@ def ADAFSFOA(area_limit_forest_iniPG):
     # 循环loop_condition次后的最终全局更新最优值
     accuracy_max_temp = max(accuracy_max)
     accuracy_max_temp_index = accuracy_max.index(accuracy_max_temp)
-    for i in range(len(accuracy_max)):
+    for i in xrange(len(accuracy_max)):
         if (accuracy_max[i] == accuracy_max_temp) and (accuracy_max_DR[i] > accuracy_max_DR[accuracy_max_temp_index]):
             accuracy_max_temp_index = i
         else:
             continue
-    optimal_feature_subset = accuracy_max_feature[accuracy_max_temp_index]
+    optimal_feature_subset = accuracy_max_feature[accuracy_max_temp_index]  # 结束迭代后产生的最优子集
+    # 群体选优策略，一个是可能出现最优准率的特征子集，一个是可能进一步维度缩减的特征子集
+    last_compare_subset_accuracy, last_compare_subset_DR = ada.GroupSelection(area_limit_forest_iniPG, num_fea_original, optimal_feature_subset.count(1))
     accuracy = max(accuracy_max)
     DR = 1 - (1.0 * optimal_feature_subset.count(1) / num_fea_original)
     end = time.clock()
@@ -254,7 +259,7 @@ if __name__ == '__main__':
                  'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 1, 2]],
                  'glass': ['glass', [1, 1, 10, 2, 1, 2, 37, 1, 1]], 'arcene': ['arcene', [1, 1, 1]]}
     for key in inputDict:
-        dataSet = inputDict[key]
+        dataSet = inputDict['dermatology']
         loop0 = len(dataSet[1]) / 3  # 实验组数
         for loop in xrange(loop0):
             labName = dataSet[1][(loop * 3)]  # 每组实验具体内容
@@ -269,8 +274,7 @@ if __name__ == '__main__':
                 for eachfile in xrange(fileNum):
                     count += 1
                     # trainX,trainY,predictX,predictY are all list
-                    trainX, trainY, predictX, predictY, loop_condition, initialization_parameters = util.loadData(
-                        dataSet[0], labName, eachfile + 1)
+                    trainX, trainY, predictX, predictY, loop_condition, initialization_parameters = util.loadData(dataSet[0], labName, eachfile + 1)
                     # TODO
                     num_tree_ini = 50  # 初始化时森林中tree的个数 ， 这里可以改进
                     initial_forest = []
@@ -283,10 +287,10 @@ if __name__ == '__main__':
                     initial_forest = [0] * num_fea_original
                     # 初始化森林
                     area_limit_forest = [deepcopy(Tree(initial_forest, 0)) for row in xrange(num_tree_ini)]
-                    FSFOA_iniPG = ini_PG(area_limit_forest)
-                    FSFOA_accuracy, FSFOA_DR = FSFOA(FSFOA_iniPG)
-                    FSFOA_accuracy_total += FSFOA_accuracy
-                    FSFOA_DR_total += FSFOA_DR
+                    # FSFOA_iniPG = ini_PG(area_limit_forest)
+                    # FSFOA_accuracy, FSFOA_DR = FSFOA(FSFOA_iniPG)
+                    # FSFOA_accuracy_total += FSFOA_accuracy
+                    # FSFOA_DR_total += FSFOA_DR
                     # TODO 初始化策略(这里上启发式),可以上决策树熵理论，不随机播特征，播数据（或是取子集kmeans++之后播）
                     '''
 
@@ -301,9 +305,11 @@ if __name__ == '__main__':
                     ADAFSFOA_accuracy, ADAFSFOA_DR = ADAFSFOA(ADAFSFOA_iniPG)
                     ADAFSFOA_accuracy_total += ADAFSFOA_accuracy
                     ADAFSFOA_DR_total += ADAFSFOA_DR
-            FSFOA_accuracy_mean = FSFOA_accuracy_total / count
-            FSFOA_DR_mean = FSFOA_DR_total / count
-            util.print_to_file('FSFOA', dataSet[0], labName, FSFOA_accuracy_mean * 100, FSFOA_DR_mean * 100)
+
+            # FSFOA_accuracy_mean = FSFOA_accuracy_total / count
+            # FSFOA_DR_mean = FSFOA_DR_total / count
+            # util.print_to_file('FSFOA', dataSet[0], labName, FSFOA_accuracy_mean * 100, FSFOA_DR_mean * 100)
+
             ADAFSFOA_accuracy_mean = ADAFSFOA_accuracy_total / count
             ADAFSFOA_DR_mean = ADAFSFOA_DR_total / count
-            util.print_to_file('ADAFSFOA', dataSet[0], labName, ADAFSFOA_accuracy_mean * 100, ADAFSFOA_DR_mean * 100)
+            # util.print_to_file('ADAFSFOA', dataSet[0], labName, ADAFSFOA_accuracy_mean * 100, ADAFSFOA_DR_mean * 100)

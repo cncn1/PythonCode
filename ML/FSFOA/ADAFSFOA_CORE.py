@@ -1,6 +1,15 @@
+#!/usr/bin/python
+# -*- coding:utf-8 -*-
 from math import log
 
 
+# 温度退火函数
+# 假设时刻t的温度用T(t)来表示, 则经典模拟退火算法的降温方式为:T(t) = T0 / lg(1+t) 而 快速模拟退火算法的降温方式为：T(t) = T0 / (1 + t)
+def T(T0, loop):
+    return int(1.0 * T0 / loop)
+
+
+'''
 def createDataSet():
     dataSet = [[1, 1, 'yes'],
                [1, 1, 'yes'],
@@ -10,6 +19,17 @@ def createDataSet():
     labels = ['no surfacing', 'flippers']
     # change to discrete values
     return dataSet, labels
+'''
+
+
+def splitDataSet(dataSet, axis, value):
+    retDataSet = []
+    for featVec in dataSet:
+        if featVec[axis] == value:
+            reducedFeatVec = featVec[:axis]  # chop out axis used for splitting
+            reducedFeatVec.extend(featVec[axis + 1:])
+            retDataSet.append(reducedFeatVec)
+    return retDataSet
 
 
 def calcShannonEnt(dataSet):
@@ -24,16 +44,6 @@ def calcShannonEnt(dataSet):
         prob = float(labelCounts[key]) / numEntries
         shannonEnt -= prob * log(prob, 2)  # log base 2
     return shannonEnt
-
-
-def splitDataSet(dataSet, axis, value):
-    retDataSet = []
-    for featVec in dataSet:
-        if featVec[axis] == value:
-            reducedFeatVec = featVec[:axis]  # chop out axis used for splitting
-            reducedFeatVec.extend(featVec[axis + 1:])
-            retDataSet.append(reducedFeatVec)
-    return retDataSet
 
 
 def chooseBestFeatureToSplit(dataSet):
@@ -56,9 +66,18 @@ def chooseBestFeatureToSplit(dataSet):
     return bestFeature  # returns an integer
 
 
+# 做最后阶段的群体选优策略
+def GroupSelection(optimal_area, feature_total, generate_num):
+    count_each_feature = [0] * feature_total  # 根据每棵树的特征统计最优森林中所有特征总共出现的次数
+    last_compare_subset_accuracy = [0] * feature_total
+    last_compare_subset_DR = [0] * feature_total
+    for optimal_each_tree in optimal_area:
+        for feature in optimal_each_tree.list:
+            if feature == 1:
+                count_each_feature[feature] += 1
 
-
-if __name__ == '__main__':
-    myDat, labels = createDataSet()
-    optimalFeature = chooseBestFeatureToSplit(myDat)
-    print optimalFeature
+#
+# if __name__ == '__main__':
+#     myDat, labels = createDataSet()
+#     optimalFeature = chooseBestFeatureToSplit(myDat)
+#     print optimalFeature
