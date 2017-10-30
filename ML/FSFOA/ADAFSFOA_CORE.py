@@ -78,14 +78,14 @@ def GroupSelection(optimal_area, feature_total, generate_num):
     return last_compare_subset_accuracy, last_compare_subset_DR
 
 
-def OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, algorithm='J48'):
+def OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, algorithm='J48', k=1):
     accuracy = 0.0
     for index in xrange(len(resultList)):
         fea_list_CB = numtofea(resultList[index], feature)
         data_sample = read_data_fea(fea_list_CB, trainX)
         data_predict = read_data_fea(fea_list_CB, predictX)
         if algorithm == 'KNN':
-            accuracy_temp = train_knn(data_sample, trainY, data_predict, predictY)
+            accuracy_temp = train_knn(data_sample, trainY, data_predict, predictY, k)
         elif algorithm == 'SVM':
             accuracy_temp = train_svm(data_sample, trainY, data_predict, predictY)
         elif algorithm == 'J48':
