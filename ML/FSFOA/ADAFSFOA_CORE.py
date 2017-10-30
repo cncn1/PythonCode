@@ -1,25 +1,14 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 from math import log
+from numpy import array
+from FSFOATOOL import *
 
 
 # 温度退火函数
 # 假设时刻t的温度用T(t)来表示, 则经典模拟退火算法的降温方式为:T(t) = T0 / lg(1+t) 而 快速模拟退火算法的降温方式为：T(t) = T0 / (1 + t)
 def T(T0, loop):
     return int(1.0 * T0 / loop)
-
-
-'''
-def createDataSet():
-    dataSet = [[1, 1, 'yes'],
-               [1, 1, 'yes'],
-               [1, 0, 'no'],
-               [0, 1, 'no'],
-               [0, 1, 'no']]
-    labels = ['no surfacing', 'flippers']
-    # change to discrete values
-    return dataSet, labels
-'''
 
 
 def splitDataSet(dataSet, axis, value):
@@ -37,7 +26,8 @@ def calcShannonEnt(dataSet):
     labelCounts = {}
     for featVec in dataSet:  # the the number of unique elements and their occurance
         currentLabel = featVec[-1]
-        if currentLabel not in labelCounts.keys(): labelCounts[currentLabel] = 0
+        if currentLabel not in labelCounts.keys():
+            labelCounts[currentLabel] = 0
         labelCounts[currentLabel] += 1
     shannonEnt = 0.0
     for key in labelCounts:
@@ -46,6 +36,7 @@ def calcShannonEnt(dataSet):
     return shannonEnt
 
 
+# 根据信息熵就最优特征,代码引用机器学习实战决策树一章
 def chooseBestFeatureToSplit(dataSet):
     numFeatures = len(dataSet[0]) - 1  # the last column is used for the labels
     baseEntropy = calcShannonEnt(dataSet)
@@ -72,12 +63,46 @@ def GroupSelection(optimal_area, feature_total, generate_num):
     last_compare_subset_accuracy = [0] * feature_total
     last_compare_subset_DR = [0] * feature_total
     for optimal_each_tree in optimal_area:
-        for feature in optimal_each_tree.list:
-            if feature == 1:
-                count_each_feature[feature] += 1
+        for feature_index in xrange(feature_total):
+            if optimal_each_tree.list[feature_index] == 1:
+                count_each_feature[feature_index] += 1
+    optimal_feature_index = array(count_each_feature).argsort()  # 每个特征出现的总次数降序排列后的下标
+    # 用如下这种结构的写法整好可以保证last_compare_subset_DR中的特征比last_compare_subset_accuracy中的特征少1
+    index = feature_total
+    while generate_num > 1:
+        index -= 1
+        last_compare_subset_accuracy[optimal_feature_index[index]] = 1
+        last_compare_subset_DR[optimal_feature_index[index]] = 1
+        generate_num -= 1
+    last_compare_subset_accuracy[optimal_feature_index[index - 1]] = 1
+    return last_compare_subset_accuracy, last_compare_subset_DR
 
-#
-# if __name__ == '__main__':
-#     myDat, labels = createDataSet()
-#     optimalFeature = chooseBestFeatureToSplit(myDat)
-#     print optimalFeature
+
+def OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, algorithm='J48'):
+    accuracy = 0.0
+    for index in xrange(len(resultList)):
+        fea_list_CB = numtofea(resultList[index], feature)
+        data_sample = read_data_fea(fea_list_CB, trainX)
+        data_predict = read_data_fea(fea_list_CB, predictX)
+        if algorithm == 'KNN':
+            accuracy_temp = train_knn(data_sample, trainY, data_predict, predictY)
+        elif algorithm == 'SVM':
+            accuracy_temp = train_svm(data_sample, trainY, data_predict, predictY)
+        elif algorithm == 'J48':
+            accuracy_temp = train_tree(data_sample, trainY, data_predict, predictY)
+        if accuracy < accuracy_temp:
+            accuracy = accuracy_temp
+            optimal_subset = resultList[index]
+        elif accuracy == accuracy_temp and len(resultList[index]) < len(optimal_subset):
+            optimal_subset = resultList[index]
+    DR = 1 - (1.0 * optimal_subset.count(1) / len(feature))
+    return accuracy, DR, optimal_subset
+
+
+if __name__ == '__main__':
+    optimal_area = [[1, 1, 0, 0, 1, 0, 1], [0, 1, 1, 0, 1, 1, 1], [0, 0, 0, 0, 1, 1, 1]]
+    s1, s2 = GroupSelection(optimal_area, 7, 4)
+    print s1, s2
+    # myDat, labels = createDataSet()
+    # optimalFeature = chooseBestFeatureToSplit(myDat)
+    # print optimalFeature

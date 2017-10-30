@@ -86,7 +86,7 @@ def loadData(groupName, labName, eachfileNum):
     elif groupName == 'dermatology':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 2
+        loop_condition = 20
         initialization_parameters = [15, 7, 15, 0.05, 50]
     elif groupName == 'heart':
         trainX, trainY = loadDataBase(trainFile)

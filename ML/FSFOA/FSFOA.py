@@ -3,7 +3,7 @@
 import time
 import util
 from FSFOA_CORE import *
-import ADAFSFOA_CORE as ada
+from ADAFSFOA_CORE import *
 
 
 # 特征树
@@ -175,7 +175,7 @@ def ADAFSFOA(area_limit_forest_iniPG):
 
         '''
         # GSC受退火函数启发
-        GSC = ada.T(GSC, m)
+        GSC = T(GSC, m)
         vice_verse_attri_GSC = random_form(GSC, num_fea_original)  # 全局播种特征的集合
         # initialization_parameters[3] 是转化率，这个为什么不需要上启发式函数，个人认为是因为候选区中的树会越来越多
         after_GSC_reverse = reverse_binary_GSC(initialization_parameters[3], vice_verse_attri_GSC, candidate_area_growing)
@@ -220,9 +220,11 @@ def ADAFSFOA(area_limit_forest_iniPG):
             continue
     optimal_feature_subset = accuracy_max_feature[accuracy_max_temp_index]  # 结束迭代后产生的最优子集
     # 群体选优策略，一个是可能出现最优准率的特征子集，一个是可能进一步维度缩减的特征子集
-    last_compare_subset_accuracy, last_compare_subset_DR = ada.GroupSelection(area_limit_forest_iniPG, num_fea_original, optimal_feature_subset.count(1))
-    accuracy = max(accuracy_max)
-    DR = 1 - (1.0 * optimal_feature_subset.count(1) / num_fea_original)
+    last_compare_subset_accuracy, last_compare_subset_DR = GroupSelection(area_limit_forest_iniPG, num_fea_original, optimal_feature_subset.count(1))
+    resultList = [optimal_feature_subset, last_compare_subset_accuracy, last_compare_subset_DR]
+    accuracy, DR, optimal_subset = OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, 'J48')
+    # accuracy = max(accuracy_max)
+    # DR = 1 - (1.0 * optimal_feature_subset.count(1) / num_fea_original)
     end = time.clock()
 
     # print '代码运行时间为：', end - start
@@ -252,14 +254,14 @@ def ADAFSFOA(area_limit_forest_iniPG):
 
 if __name__ == '__main__':
     # 变量定义
-    inputDict = {'ionosphere': ['ionosphere', [1, 1, 10, 2, 1, 2, 37, 1, 10]], 'cleveland': ['cleveland', [37, 1, 1]],
-                 'wine': ['wine', [1, 1, 10, 2, 1, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 1, 2, 37, 1, 10]],
+    inputDict = {'ionosphere': ['ionosphere', [1, 1, 10, 2, 5, 2, 37, 1, 10]], 'cleveland': ['cleveland', [37, 1, 1]],
+                 'wine': ['wine', [1, 1, 10, 2, 5, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 5, 2, 37, 1, 10]],
                  'srbct': ['srbct', [37, 1, 10]], 'segmentation': ['segmentation', [1, 1, 10]],
-                 'vehicle': ['vehicle', [1, 1, 10, 2, 1, 2, 37, 1, 1]],
-                 'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 1, 2]],
-                 'glass': ['glass', [1, 1, 10, 2, 1, 2, 37, 1, 1]], 'arcene': ['arcene', [1, 1, 1]]}
+                 'vehicle': ['vehicle', [1, 1, 10, 2, 5, 2, 37, 1, 1]],
+                 'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 5, 2]],
+                 'glass': ['glass', [1, 1, 10, 2, 5, 2, 37, 1, 1]], 'arcene': ['arcene', [1, 1, 1]]}
     for key in inputDict:
-        dataSet = inputDict['dermatology']
+        dataSet = inputDict[key]
         loop0 = len(dataSet[1]) / 3  # 实验组数
         for loop in xrange(loop0):
             labName = dataSet[1][(loop * 3)]  # 每组实验具体内容
@@ -300,7 +302,7 @@ if __name__ == '__main__':
 
                     '''
                     # 改进一：根据信息熵理论，挑出具有最好用于划分数据集的特征
-                    optimalFeature = ada.chooseBestFeatureToSplit(trainX)
+                    optimalFeature = chooseBestFeatureToSplit(trainX)
                     ADAFSFOA_iniPG = ini_PG(area_limit_forest, optimalFeature=optimalFeature)
                     ADAFSFOA_accuracy, ADAFSFOA_DR = ADAFSFOA(ADAFSFOA_iniPG)
                     ADAFSFOA_accuracy_total += ADAFSFOA_accuracy
@@ -312,4 +314,4 @@ if __name__ == '__main__':
 
             ADAFSFOA_accuracy_mean = ADAFSFOA_accuracy_total / count
             ADAFSFOA_DR_mean = ADAFSFOA_DR_total / count
-            # util.print_to_file('ADAFSFOA', dataSet[0], labName, ADAFSFOA_accuracy_mean * 100, ADAFSFOA_DR_mean * 100)
+            util.print_to_file('ADAFSFOA', dataSet[0], labName, ADAFSFOA_accuracy_mean * 100, ADAFSFOA_DR_mean * 100)
