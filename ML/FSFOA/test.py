@@ -50,12 +50,18 @@ class Tree:
 
 
 if __name__ == '__main__':
-    index = [1, 2]
-    dataMap = np.array([[1, 4, 1, 4],
-                        [2, 5, 2, 5],
-                        [3, 6, 3, 6]])
-    dataSim = []
-    print dataMap[:, 2]
-    for i in index:
-        dataSim.append(dataMap[:, i])
-    print np.mat(dataSim).T
+    # index = [1, 2]
+    # dataMap = np.array([[1, 4, 1, 4],
+    #                     [2, 5, 2, 5],
+    #                     [3, 6, 3, 6]])
+    # dataSim = []
+    # print dataMap[:, 2]
+    # for i in index:
+    #     dataSim.append(dataMap[:, i])
+    # print np.mat(dataSim).T
+    k = 1
+    c = 0
+    while c < 100000000:
+        k += c
+        c += 1
+    print k

@@ -72,7 +72,7 @@ def loadData(groupName, labName, eachfileNum):
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
         loop_condition = 20
-        initialization_parameters = [15, 6, 7, 0.05, 50]
+        initialization_parameters = [15, 460, 7, 0.05, 50]
     elif groupName == 'segmentation':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
@@ -102,7 +102,7 @@ def loadData(groupName, labName, eachfileNum):
         trainX, trainY = loadDataBase(trainFile, '\t')
         predictX, predictY = loadDataBase(predictFile, '\t')
         loop_condition = 20
-        initialization_parameters = [15, 2, 4, 0.05, 50]
+        initialization_parameters = [15, 2000, 4, 0.05, 50]
     return trainX, trainY, predictX, predictY, loop_condition, initialization_parameters
 
 
@@ -111,7 +111,7 @@ def print_to_file(algorithmName, dataSetName, labName, accuracy_mean, DR_mean):
     out_file_name = dataSetName + '_' + str(labName)
     out_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     out_result = out_time + '\n' + str(float('%.2f' % accuracy_mean)) + '\t' + str(float('%.2f' % DR_mean))
-    with open("E:/AlgorithmOut/" + algorithmName + "/J48/%s.txt" % out_file_name, "a") as f:
+    with open("E:/AlgorithmOut/" + algorithmName + "/1NN/%s.txt" % out_file_name, "a") as f:
         f.write("%s\n\n" % out_result)
 
 
@@ -139,15 +139,15 @@ if __name__ == '__main__':
     # X = np.array([[-1, 1], [-2, -1], [-3, -2], [1, 1], [2, 1], [3, 2]])
     # print len(pca(X, 1))
     # 变量定义
-    inputDict = {'ionosphere': ['ionosphere', [1, 1, 10, 2, 1, 2, 37, 1, 10]], 'cleveland': ['cleveland', [37, 1, 1]],
-                 'wine': ['wine', [1, 1, 10, 2, 1, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 1, 2, 37, 1, 10]],
-                 'srbct': ['srbct', [37, 1, 10]], 'segmentation': ['segmentation', [1, 1, 10]],
-                 'vehicle': ['vehicle', [1, 1, 10, 2, 1, 2, 37, 1, 1]],
-                 'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 1, 2]],
-                 'glass': ['glass', [1, 1, 10, 2, 1, 2, 37, 1, 1]], 'arcene': ['arcene', [1, 1, 1]]}
+    inputDict0 = {'ionosphere': ['ionosphere', [1, 1, 10, 2, 1, 2, 37, 1, 10]], 'cleveland': ['cleveland', [37, 1, 1]],
+                  'wine': ['wine', [1, 1, 10, 2, 1, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 1, 2, 37, 1, 10]],
+                  'segmentation': ['segmentation', [1, 1, 10]], 'vehicle': ['vehicle', [1, 1, 10, 2, 1, 2, 37, 1, 1]],
+                  'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 1, 2]],
+                  'glass': ['glass', [1, 1, 10, 2, 1, 2, 37, 1, 1]]}
+    inputDict1 = {'srbct': ['srbct', [37, 1, 10]], 'arcene': ['arcene', [1, 1, 1]]}
     # trainX,trainY,predictX,predictY are all list
-    for key in inputDict:
-        dataSet = inputDict[key]
+    for key in inputDict1:
+        dataSet = inputDict1[key]
         loop0 = len(dataSet[1]) / 3  # 实验组数
         for loop in xrange(loop0):
             labName = dataSet[1][(loop * 3)]  # 每组实验具体内容
@@ -158,8 +158,8 @@ if __name__ == '__main__':
                     trainX, trainY, predictX, predictY, loop_condition, initialization_parameters = loadData(dataSet[0],
                                                                                                              labName,
                                                                                                              eachfile + 1)
-                    pca = PCA(n_components='mle')
-                    pca.fit(np.array(trainX))
-                    print pca.explained_variance_ratio_
-                    # optimalFeature = ADAFSFOA_CORE.chooseBestFeatureToSplit(trainX)
-                    # print optimalFeature
+                    # pca = PCA(n_components='mle')
+                    # pca.fit(np.array(trainX))
+                    # print pca.explained_variance_ratio_
+                    # # optimalFeature = ADAFSFOA_CORE.chooseBestFeatureToSplit(trainX)
+                    # # print optimalFeature
