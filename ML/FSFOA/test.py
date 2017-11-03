@@ -48,6 +48,19 @@ class Tree:
         self.list = tree_list
         self.age = tree_age
 
+def add(x, y,z):
+    return x+y
+def cheng(x,y,z):
+    return x*y
+def jian(x,y,z):
+    return x+y-z
+def fun(str):
+    if str == '1':
+        return add
+    elif str == '2':
+        return cheng
+    elif str == '3':
+        return jian
 
 if __name__ == '__main__':
     # index = [1, 2]
@@ -59,9 +72,7 @@ if __name__ == '__main__':
     # for i in index:
     #     dataSim.append(dataMap[:, i])
     # print np.mat(dataSim).T
-    k = 1
-    c = 0
-    while c < 100000000:
-        k += c
-        c += 1
+    algorithm = fun('2')
+    print algorithm
+    k = algorithm(3,6,8)
     print k

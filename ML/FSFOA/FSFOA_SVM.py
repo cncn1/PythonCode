@@ -41,6 +41,7 @@ def FSFOA(area_limit_forest_iniPG):
     accuracy_max = []  # 存储循环loop_condition中每次的最大准确率
     accuracy_max_feature = []  # 存储循环loop_condition中每次的最大准确率所对应的特征
     accuracy_max_DR = []  # 存储循环loop_condition中每次的最大准确率所对应的维度缩减
+    candidate_area_growing = []  # 存储候选区中的树
     m = 0
     while m < loop_condition:
         # print '****************************第', m + 1, '次循环*********************'
@@ -54,11 +55,11 @@ def FSFOA(area_limit_forest_iniPG):
 
         # print '#######################################第', m, 'population limiting放入候选区开始######################'
         # 获取候选区的树
-        candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters[0], initialization_parameters[4], feature, area_limit_forest_iniPG, trainSelect, KinKNN)
+        candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters[0], initialization_parameters[4], feature,area_limit_forest_iniPG)
         # print '#######################################第', m, 'population limiting 放入候选区结束######################'
         # print '#######################################第', m, 'Global seeding GSC开始##################################'
         vice_verse_attri_GSC = random_form(initialization_parameters[2], num_fea_original)  # 全局播种特征的集合
-        after_GSC_reverse = reverse_binary_GSC(initialization_parameters[3], candidate_area_growing, num_fea_original, initialization_parameters[0])
+        after_GSC_reverse = reverse_binary_GSC(initialization_parameters[3], vice_verse_attri_GSC, candidate_area_growing)
         area_limit_forest_iniPG += after_GSC_reverse
         # print '#######################################第', m, 'Global seeding GSC结束##################################'
 
@@ -70,10 +71,7 @@ def FSFOA(area_limit_forest_iniPG):
             if len(fea_list):
                 data_sample = read_data_fea(fea_list, trainX)
                 data_predict = read_data_fea(fea_list, predictX)
-                acc.append(trainSelect(data_sample, trainY, data_predict, predictY, KinKNN))  # 每棵树的准确率存在acc中
-                # acc.append(train_knn(data_sample, trainY, data_predict, predictY, 1))
-                # # acc.append(train_svm(data_sample, trainY, data_predict, predictY))
-                # # acc.append(train_tree(data_sample, trainY, data_predict, predictY))
+                acc.append(train_svm(data_sample, trainY, data_predict, predictY))
                 DR.append(1 - (1.0 * len(fea_list) / len(feature)))
             else:
                 acc.append(0)
@@ -104,15 +102,15 @@ def FSFOA(area_limit_forest_iniPG):
     DR = 1 - (1.0 * optimal_feature_subset.count(1) / num_fea_original)
     end = time.clock()
 
-    print '代码运行时间为：', end - start
+    # print '代码运行时间为：', end - start
     # print 'feature number of Original data set :  ', num_fea_original  # 原始数据集特征数目
     # print 'original_acc_knn is : ', original_acc_knn
     # print 'original_acc_svm is : ', original_acc_svm
     # print 'original_acc_tree is : ', original_acc_tree
-    print 'Optimal Feature subset ：', optimal_feature_subset  # 最优特征子集
+    # print 'Optimal Feature subset ：', optimal_feature_subset  # 最优特征子集
     # print 'length of candidate area ：', len(candidate_area_growing)  # 候选区的长度
     print 'FSFOA_accuracy is : ', accuracy, '\tFSFOA_DR is : ', DR, '\n'
-    return accuracy, DR, optimal_feature_subset, end - start
+    return accuracy, DR
 
 
 # optimalFeature 为根据信息熵挑出的最优特征
@@ -121,6 +119,7 @@ def ADAFSFOA(area_limit_forest_iniPG):
     accuracy_max = []  # 存储循环loop_condition中每次的最大准确率
     accuracy_max_feature = []  # 存储循环loop_condition中每次的最大准确率所对应的特征
     accuracy_max_DR = []  # 存储循环loop_condition中每次的最大准确率所对应的维度缩减
+    GSC = min((2 + 2 * loop_condition), int(num_fea_original * 0.5))  # 用模拟退火启发式的方法，可以让GSC有更广泛的搜索空间
     m = 0
     while m < loop_condition:
         # print '****************************第', m + 1, '次循环*********************'
@@ -134,18 +133,21 @@ def ADAFSFOA(area_limit_forest_iniPG):
 
         # print '#######################################第', m, 'population limiting放入候选区开始######################'
         # 获取候选区的树
-        candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters[0], initialization_parameters[4], feature, area_limit_forest_iniPG, trainSelect, KinKNN)
+        candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters[0], initialization_parameters[4], feature, area_limit_forest_iniPG)
         # print '#######################################第', m, 'population limiting 放入候选区结束#####################'
         # print '#######################################第', m, 'Global seeding GSC开始#################################'
         # TODO 原始论文从候选区随机选择若干棵树全局播种,这里可以改进上启发式
         '''
-        # 只需要根据转化率值完成候选区5%的反转即可(这里可以改进)
+        # 只需要根据GSC值完成候选区5%的反转即可(这里可以改进)
 
 
 
         '''
-        # initialization_parameters[3] 是转化率，这个为什么不需要上启发式函数，个人认为是因为候选区中的树会越来越多已经达到了动态的变化过程
-        after_GSC_reverse = reverse_binary_GSC(initialization_parameters[3], candidate_area_growing, num_fea_original, initialization_parameters[0])
+        # GSC受退火函数启发
+        GSC = T(GSC, m)
+        vice_verse_attri_GSC = random_form(GSC, num_fea_original)  # 全局播种特征的集合
+        # initialization_parameters[3] 是转化率，这个为什么不需要上启发式函数，个人认为是因为候选区中的树会越来越多
+        after_GSC_reverse = reverse_binary_GSC(initialization_parameters[3], vice_verse_attri_GSC, candidate_area_growing)
         area_limit_forest_iniPG += after_GSC_reverse
         # print '#######################################第', m, 'Global seeding GSC结束##################################'
 
@@ -157,10 +159,7 @@ def ADAFSFOA(area_limit_forest_iniPG):
             if len(fea_list):
                 data_sample = read_data_fea(fea_list, trainX)
                 data_predict = read_data_fea(fea_list, predictX)
-                acc.append(trainSelect(data_sample, trainY, data_predict, predictY, KinKNN))  # 每棵树的准确率存在acc中
-                # acc.append(train_knn(data_sample, trainY, data_predict, predictY, 1))  # 每棵树的准确率存在acc中
-                # acc.append(train_svm(data_sample, trainY, data_predict, predictY))
-                # acc.append(train_tree(data_sample, trainY, data_predict, predictY))
+                acc.append(train_svm(data_sample, trainY, data_predict, predictY))
                 DR.append(1 - (1.0 * len(fea_list) / len(feature)))
             else:
                 acc.append(0)
@@ -190,92 +189,86 @@ def ADAFSFOA(area_limit_forest_iniPG):
     # 群体选优策略，一个是可能出现最优准率的特征子集，一个是可能进一步维度缩减的特征子集
     last_compare_subset_accuracy, last_compare_subset_DR = GroupSelection(area_limit_forest_iniPG, num_fea_original, optimal_feature_subset.count(1))
     resultList = [optimal_feature_subset, last_compare_subset_accuracy, last_compare_subset_DR]
-    accuracy, DR, optimal_subset = OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, trainSelect, KinKNN)
+    accuracy, DR, optimal_subset = OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, 'SVM', 1)
     # accuracy = max(accuracy_max)
     # DR = 1 - (1.0 * optimal_feature_subset.count(1) / num_fea_original)
     end = time.clock()
 
-    print '代码运行时间为：', end - start
+    # print '代码运行时间为：', end - start
     # print 'feature number of Original data set :  ', num_fea_original  # 原始数据集特征数目
     # print 'original_acc_knn is : ', original_acc_knn
     # print 'original_acc_svm is : ', original_acc_svm
     # print 'original_acc_tree is : ', original_acc_tree
-    print 'Optimal Feature subset ：', optimal_feature_subset  # 最优特征子集
+    # print 'Optimal Feature subset ：', optimal_feature_subset  # 最优特征子集
     # print 'length of candidate area ：', len(candidate_area_growing)  # 候选区的长度
     print 'ADAFSFOA_accuracy is : ', accuracy, '\tADAFSFOA_DR is : ', DR, '\n'
-    return accuracy, DR, optimal_feature_subset, end - start
+    return accuracy, DR
 
 
 if __name__ == '__main__':
     # 变量定义
-    inputDict0 = {'ionosphere': ['ionosphere', [1, 1, 10, 2, 5, 2, 37, 1, 10]], 'cleveland': ['cleveland', [37, 1, 1]],
-                  'wine': ['wine', [1, 1, 10, 2, 5, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 5, 2, 37, 1, 10]],
-                  'segmentation': ['segmentation', [1, 1, 10]], 'vehicle': ['vehicle', [1, 1, 10, 2, 5, 2, 37, 1, 1]],
-                  'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 5, 2]],
-                  'glass': ['glass', [1, 1, 10, 2, 5, 2, 37, 1, 1]], 'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
-    inputDict1 = {'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
-    KinKNN = 1  # 设置KNN中的K值
-    trainSelect = select_train('J48')  # 选择分类器
-    for key in inputDict0:
-        dataSet = inputDict0[key]
-        loop0 = len(dataSet[1]) / 3  # 实验组数
-        for loop in xrange(loop0):
-            labName = dataSet[1][(loop * 3)]  # 每组实验具体内容
-            labTimes = dataSet[1][(loop * 3) + 1]  # 每组实验重复次数
-            fileNum = dataSet[1][(loop * 3 + 2)]  # 每组实验文件个数
-            FSFOA_accuracy_total = 0  # 记录FSFOA算法准确率之和
-            FSFOA_DR_total = 0  # 记录FSFOA算法DR之和
-            FSFOA_OPSUBALL = []  # 记录FSFOA算法选出的最优特征子集的集合
-            FSFOA_TIMEALL = 0  # 记录FSFOA算法运行的总时间
-            ADAFSFOA_accuracy_total = 0  # 记录ADAFSFOA算法准确率之和
-            ADAFSFOA_DR_total = 0  # 记录ADAFSFOA算法DR之和
-            ADAFSFOA_OPSUBALL = []  # 记录ADAFSFOA算法选出的最优特征子集的集合
-            ADAFSFOA_TIMEALL = 0  # 记录ADAFSFOA算法运行的总时间
-            count = 0  # 记录总的实验次数
-            for times in xrange(labTimes):
-                for eachfile in xrange(fileNum):
-                    count += 1
-                    # trainX,trainY,predictX,predictY are all list
-                    trainX, trainY, predictX, predictY, loop_condition, initialization_parameters = util.loadData(dataSet[0], labName, eachfile + 1)
-                    # TODO
-                    num_tree_ini = 50  # 初始化时森林中tree的个数, 这里可以改进
-                    initial_forest = []
-                    area_limit_forest = []
-                    num_fea_original = mat(trainX).shape[1]  # 特征长度
-                    feature = []  # 特征集合索引,特征集合的角标
+    inputDict0 = {'ionosphere': ['ionosphere', [1, 1, 10, 2, 1, 2, 37, 1, 10]], 'cleveland': ['cleveland', [37, 1, 1]],
+                  'wine': ['wine', [1, 1, 10, 2, 1, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 1, 2, 37, 1, 10]],
+                  'segmentation': ['segmentation', [1, 1, 10]], 'vehicle': ['vehicle', [1, 1, 10, 2, 1, 2, 37, 1, 1]],
+                  'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 1, 2]],
+                  'glass': ['glass', [1, 1, 10, 2, 1, 2, 37, 1, 1]]}
+    inputDict1 = {'srbct': ['srbct', [37, 1, 10]], 'arcene': ['arcene', [1, 1, 1]]}
+    inputDict2 = {'vehicle': ['vehicle', [2, 1, 2]]}
+    ctime = 0
+    while ctime < 100:
+        ctime += 1
+        for key in inputDict2:
+            dataSet = inputDict2[key]
+            loop0 = len(dataSet[1]) / 3  # 实验组数
+            for loop in xrange(loop0):
+                labName = dataSet[1][(loop * 3)]  # 每组实验具体内容
+                labTimes = dataSet[1][(loop * 3) + 1]  # 每组实验重复次数
+                fileNum = dataSet[1][(loop * 3 + 2)]  # 每组实验文件个数
+                FSFOA_accuracy_total = 0  # 记录FSFOA算法准确率之和
+                FSFOA_DR_total = 0  # 记录FSFOA算法DR之和
+                ADAFSFOA_accuracy_total = 0  # 记录ADAFSFOA算法准确率之和
+                ADAFSFOA_DR_total = 0  # 记录ADAFSFOA算法DR之和
+                count = 0  # 记录总的实验次数
+                for times in xrange(labTimes):
+                    for eachfile in xrange(fileNum):
+                        count += 1
+                        # trainX,trainY,predictX,predictY are all list
+                        trainX, trainY, predictX, predictY, loop_condition, initialization_parameters = util.loadData(dataSet[0], labName, eachfile + 1)
+                        # TODO
+                        num_tree_ini = 60  # 初始化时森林中tree的个数 ， 这里可以改进
+                        initial_forest = []
+                        area_limit_forest = []
+                        num_fea_original = mat(trainX).shape[1]  # 特征长度
+                        feature = []  # 特征集合索引,特征集合的角标
+                        for i in range(num_fea_original):
+                            feature.append(i)
+                        # 将每棵树记录的特征以全0数组的形式初始化
+                        initial_forest = [0] * num_fea_original
+                        # 初始化森林
+                        area_limit_forest = [deepcopy(Tree(initial_forest, 0)) for row in xrange(num_tree_ini)]
+                        # FSFOA_iniPG = ini_PG(area_limit_forest)
+                        # FSFOA_accuracy, FSFOA_DR = FSFOA(FSFOA_iniPG)
+                        # FSFOA_accuracy_total += FSFOA_accuracy
+                        # FSFOA_DR_total += FSFOA_DR
+                        # TODO 初始化策略(这里上启发式),可以上决策树熵理论，不随机播特征，播数据（或是取子集kmeans++之后播）
+                        '''
+    
+    
+    
+    
+    
+                        '''
+                        # 改进一：根据信息熵理论，挑出具有最好用于划分数据集的特征
+                        optimalFeature = chooseBestFeatureToSplit(trainX)
+                        ADAFSFOA_iniPG = ini_PG(area_limit_forest, optimalFeature=optimalFeature)
+                        ADAFSFOA_accuracy, ADAFSFOA_DR = ADAFSFOA(ADAFSFOA_iniPG)
+                        ADAFSFOA_accuracy_total += ADAFSFOA_accuracy
+                        ADAFSFOA_DR_total += ADAFSFOA_DR
 
-                    for i in range(num_fea_original):
-                        feature.append(i)
-                    # 将每棵树记录的特征以全0数组的形式初始化
-                    initial_forest = [0] * num_fea_original
-                    # 初始化森林
-                    area_limit_forest = [deepcopy(Tree(initial_forest, 0)) for row in xrange(num_tree_ini)]
-                    FSFOA_iniPG = ini_PG(area_limit_forest)
-                    FSFOA_accuracy, FSFOA_DR, FSFOA_OPSUB, FSFOA_TIME = FSFOA(FSFOA_iniPG)
-                    FSFOA_accuracy_total += FSFOA_accuracy
-                    FSFOA_DR_total += FSFOA_DR
-                    FSFOA_OPSUBALL.append(FSFOA_OPSUB)
-                    FSFOA_TIMEALL += FSFOA_TIME
-                    # TODO 初始化策略(这里上启发式),可以上决策树熵理论，不随机播特征，播数据（或是取子集kmeans++之后播）
-                    '''
+                # FSFOA_accuracy_mean = FSFOA_accuracy_total / count
+                # FSFOA_DR_mean = FSFOA_DR_total / count
+                # util.print_to_file('FSFOA', dataSet[0], labName, FSFOA_accuracy_mean * 100, FSFOA_DR_mean * 100)
 
-
-
-
-
-                    '''
-                    # 改进一：根据信息增益，挑出具有最好用于划分数据集的特征，后续转成根据信息增益比启发50%
-                    optimalFeature = chooseBestFeatureToSplit(trainX)
-                    ADAFSFOA_iniPG = ini_PG(area_limit_forest, optimalFeature=optimalFeature)
-                    ADAFSFOA_accuracy, ADAFSFOA_DR, ADAFSFOA_OPSUB, ADAFSFOA_TIME = ADAFSFOA(ADAFSFOA_iniPG)
-                    ADAFSFOA_accuracy_total += ADAFSFOA_accuracy
-                    ADAFSFOA_DR_total += ADAFSFOA_DR
-                    ADAFSFOA_OPSUBALL.append(ADAFSFOA_OPSUB)
-                    ADAFSFOA_TIMEALL += ADAFSFOA_TIME
-            FSFOA_accuracy_mean = FSFOA_accuracy_total / count
-            FSFOA_DR_mean = FSFOA_DR_total / count
-            util.print_to_file('FSFOA', dataSet[0], labName, FSFOA_accuracy_mean * 100, FSFOA_DR_mean * 100, FSFOA_OPSUBALL, FSFOA_TIMEALL)
-
-            ADAFSFOA_accuracy_mean = ADAFSFOA_accuracy_total / count
-            ADAFSFOA_DR_mean = ADAFSFOA_DR_total / count
-            util.print_to_file('ADAFSFOA', dataSet[0], labName, ADAFSFOA_accuracy_mean * 100, ADAFSFOA_DR_mean * 100, ADAFSFOA_OPSUBALL, ADAFSFOA_TIMEALL)
+                ADAFSFOA_accuracy_mean = ADAFSFOA_accuracy_total / count
+                ADAFSFOA_DR_mean = ADAFSFOA_DR_total / count
+                util.print_to_file('ADAFSFOA', 'SVM', dataSet[0], labName, ADAFSFOA_accuracy_mean * 100, ADAFSFOA_DR_mean * 100)

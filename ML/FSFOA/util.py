@@ -72,7 +72,7 @@ def loadData(groupName, labName, eachfileNum):
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
         loop_condition = 20
-        initialization_parameters = [15, 460, 7, 0.05, 50]
+        initialization_parameters = [15, 9, 7, 0.05, 50]
     elif groupName == 'segmentation':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
@@ -102,16 +102,17 @@ def loadData(groupName, labName, eachfileNum):
         trainX, trainY = loadDataBase(trainFile, '\t')
         predictX, predictY = loadDataBase(predictFile, '\t')
         loop_condition = 20
-        initialization_parameters = [15, 2000, 4, 0.05, 50]
+        initialization_parameters = [15, 20, 4, 0.05, 50]
     return trainX, trainY, predictX, predictY, loop_condition, initialization_parameters
 
 
 # 向文件中输出实验结果
-def print_to_file(algorithmName, dataSetName, labName, accuracy_mean, DR_mean):
+def print_to_file(algorithmName, foldName, dataSetName, labName, accuracy_mean, DR_mean, OP_sub, total_time):
     out_file_name = dataSetName + '_' + str(labName)
     out_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    out_result = out_time + '\n' + str(float('%.2f' % accuracy_mean)) + '\t' + str(float('%.2f' % DR_mean))
-    with open("E:/AlgorithmOut/" + algorithmName + "/1NN/%s.txt" % out_file_name, "a") as f:
+    str_OP_sub = ''.join(OP_sub)
+    out_result = out_time + '\n' + str(float('%.2f' % accuracy_mean)) + '\t' + str(float('%.2f' % DR_mean)) + '\t' + str_OP_sub + '\t' + total_time
+    with open("F:/AlgorithmOut/" + algorithmName + "/" + foldName + "/%s.txt" % out_file_name, "a") as f:
         f.write("%s\n\n" % out_result)
 
 

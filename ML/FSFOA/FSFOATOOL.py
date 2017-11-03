@@ -91,7 +91,7 @@ def train_knn(data_train, label_train, data_pre, label_pre, k=1):
     return acc
 
 
-def train_svm(data_train, label_train, data_predict, label_predict):
+def train_svm(data_train, label_train, data_predict, label_predict, *args):
     clf = svm.SVC()
     clf.fit(data_train, label_train)
     predict = clf.predict(data_predict)
@@ -99,7 +99,7 @@ def train_svm(data_train, label_train, data_predict, label_predict):
     return acc
 
 
-def train_tree(data_train, label_train, data_pre, label_pre):
+def train_tree(data_train, label_train, data_pre, label_pre, *args):
     # dot_data=StringIO()
     clf = tree.DecisionTreeClassifier()
     clf.fit(data_train, label_train)
@@ -109,3 +109,13 @@ def train_tree(data_train, label_train, data_pre, label_pre):
     predict = clf.predict(data_pre)
     acc = acc_pre(predict, label_pre)
     return acc
+
+
+# 分类器选择函数
+def select_train(train_name):
+    if train_name in ('KNN', '1NN', '3NN', '5NN'):
+        return train_knn
+    elif train_name == 'SVM':
+        return train_svm
+    elif train_name == 'J48':
+        return train_tree

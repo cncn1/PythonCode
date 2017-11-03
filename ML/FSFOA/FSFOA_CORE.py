@@ -27,8 +27,8 @@ def reverse_binary_LSC(vice_verse_attri, area_limit_forest_iniPG):
     return after_reverse
 
 
-# 原始更新策略
-def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, area_limit_forest_iniPG):
+# 更新策略
+def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, area_limit_forest_iniPG, trainSelect, KinKNN=1):
     selected_trees = []  # 候选森林中的树
     acc = []
     acc_omit_index = []  # 存的是acc中前num_extra的最小值的角标
@@ -48,9 +48,10 @@ def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, a
             if len(fea_list) > 0:
                 data_sample = read_data_fea(fea_list, trainX)
                 data_predict = read_data_fea(fea_list, predictX)
+                acc.append(trainSelect(data_sample, trainY, data_predict, predictY, KinKNN))  # 每棵树的准确率存在acc中
                 # acc.append(train_knn(data_sample, trainY, data_predict, predictY))
-                # acc.append(train_svm(data_sample, trainY, data_predict, predictY))#每棵树的准确率存在acc中
-                acc.append(train_tree(data_sample, trainY, data_predict, predictY))
+                # acc.append(train_svm(data_sample, trainY, data_predict, predictY))
+                # acc.append(train_tree(data_sample, trainY, data_predict, predictY))
             else:
                 # print 'fea_list is null'
                 acc.append(0)
@@ -67,9 +68,10 @@ def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, a
 
 
 # Global_seeding（全局播种）
-def reverse_binary_GSC(transferRate, vice_verse_attri_GSC, candidate_area):
+def reverse_binary_GSC(transferRate, candidate_area, feature_length, life_time):
     after_reverse = []
     selected_tree_area = []  # 从候选区中挑出来进行反转的树
+    GSC0 = 1.0 * min(2 + 2 * life_time, feature_length * 0.5)  # GSC的初值设置
     num_percent_transfer = int(len(candidate_area) * transferRate)
     j = 0
     while j < num_percent_transfer:
@@ -80,6 +82,10 @@ def reverse_binary_GSC(transferRate, vice_verse_attri_GSC, candidate_area):
         else:
             continue
     for selected_tree in selected_tree_area:
+        # GSC受退火函数启发 温度退火函数 可以让GSC有更广泛的搜索空间并利用了原始数据结构age动态变化的特点
+        # 假设时刻t的温度用T(t)来表示, 则经典模拟退火算法的降温方式为:T(t) = T0 / lg(t + 1) 而 快速模拟退火算法的降温方式为：T(t) = T0 / (t + 1)  t从0开始取值
+        GSC = int(GSC0 / (selected_tree.age + 1))
+        vice_verse_attri_GSC = random_form(GSC, feature_length)  # 全局播种特征的集合
         selected_tree.list = revers(selected_tree.list, vice_verse_attri_GSC)
         after_reverse.append(deepcopy(selected_tree))
     return after_reverse

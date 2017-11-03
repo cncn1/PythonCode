@@ -5,12 +5,6 @@ from numpy import array
 from FSFOATOOL import *
 
 
-# 温度退火函数
-# 假设时刻t的温度用T(t)来表示, 则经典模拟退火算法的降温方式为:T(t) = T0 / lg(1+t) 而 快速模拟退火算法的降温方式为：T(t) = T0 / (1 + t)
-def T(T0, loop):
-    return int(1.0 * T0 / loop)
-
-
 def splitDataSet(dataSet, axis, value):
     retDataSet = []
     for featVec in dataSet:
@@ -78,18 +72,19 @@ def GroupSelection(optimal_area, feature_total, generate_num):
     return last_compare_subset_accuracy, last_compare_subset_DR
 
 
-def OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, algorithm='J48', k=1):
+def OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, trainSelect, KinKNN=1):
     accuracy = 0.0
     for index in xrange(len(resultList)):
         fea_list_CB = numtofea(resultList[index], feature)
         data_sample = read_data_fea(fea_list_CB, trainX)
         data_predict = read_data_fea(fea_list_CB, predictX)
-        if algorithm == 'KNN':
-            accuracy_temp = train_knn(data_sample, trainY, data_predict, predictY, k)
-        elif algorithm == 'SVM':
-            accuracy_temp = train_svm(data_sample, trainY, data_predict, predictY)
-        elif algorithm == 'J48':
-            accuracy_temp = train_tree(data_sample, trainY, data_predict, predictY)
+        accuracy_temp = trainSelect(data_sample, trainY, data_predict, predictY, KinKNN)
+        # if algorithm == 'KNN':
+        #     accuracy_temp = train_knn(data_sample, trainY, data_predict, predictY, k)
+        # elif algorithm == 'SVM':
+        #     accuracy_temp = train_svm(data_sample, trainY, data_predict, predictY)
+        # elif algorithm == 'J48':
+        #     accuracy_temp = train_tree(data_sample, trainY, data_predict, predictY)
         if accuracy < accuracy_temp:
             accuracy = accuracy_temp
             optimal_subset = resultList[index]
