@@ -25,7 +25,8 @@ def reverse_binary_LSC(vice_verse_attri, area_limit_forest_iniPG):
 
 
 # 更新策略
-def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, area_limit_forest_iniPG, trainSelect, KinKNN=1):
+def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, area_limit_forest_iniPG, trainSelect,
+                 KinKNN=1):
     selected_trees = []  # 候选森林中的树
     acc = []
     acc_omit_index = []  # 存的是acc中前num_extra的最小值的角标
@@ -77,6 +78,7 @@ def reverse_binary_GSC_FSFOA(transferRate, candidate_area, feature_length, GSC):
         selected_tree.list = revers(selected_tree.list, vice_verse_attri_GSC)
         after_reverse.append(deepcopy(selected_tree))
     return after_reverse
+
 
 # EFSFOA Global_seeding（全局播种）
 def reverse_binary_GSC_EFSFOA(transferRate, candidate_area, feature_length, GSC0):

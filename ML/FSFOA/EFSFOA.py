@@ -27,7 +27,7 @@ def ini_PG(forest_init):
         attri_reverse = random_form(init_feature_num, num_fea_original)
         tree = ini_reverse(attri_reverse, forest_init[init])
         area_limit_forest_init.append(deepcopy(tree))
-    for adaTree in area_limit_forest_init[0: int(len(area_limit_forest_init) * 0.25)]:
+    for adaTree in area_limit_forest_init[0: int(len(area_limit_forest_init) * 0.5)]:
             adaTree.list = revers(adaTree.list, optimalFeature, 0)
     return area_limit_forest_init
 
@@ -50,7 +50,7 @@ def EFSFOA(area_limit_forest_iniPG):
         # print '#######################################第', m, 'local seeding播种结束##################################'
 
         # print '#######################################第', m, 'population limiting放入候选区开始######################'
-        # 获取候选区的树
+        # 更新区域中的树，同时获取候选区的树
         candidate_area_growing = select_trees(trainX, trainY, predictX, predictY, initialization_parameters[0],
                                               initialization_parameters[4], feature, area_limit_forest_iniPG,
                                               trainSelect, KinKNN)
@@ -135,7 +135,8 @@ if __name__ == '__main__':
     inputDict1 = {'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
     KinKNN = 1  # 设置KNN中的K值
     # trainName = ['J48', 'SVM', '1NN', '3NN', '5NN']
-    trainName = 'J48'
+    trainName = '5NN'
+    print trainName, '\n'
     trainSelect = select_train(trainName)  # 选择分类器
     for key in inputDict0:
         dataSet = inputDict0[key]

@@ -30,7 +30,7 @@ def calcShannonEnt(dataSet):
     return shannonEnt
 
 
-# 根据信息熵就最优特征,代码引用机器学习实战决策树一章
+# 根据信息熵计算最优特征,代码引用机器学习实战决策树一章
 def chooseBestFeatureToSplit(dataSet):
     numFeatures = len(dataSet[0]) - 1  # the last column is used for the labels
     baseEntropy = calcShannonEnt(dataSet)
@@ -49,6 +49,37 @@ def chooseBestFeatureToSplit(dataSet):
             bestInfoGain = infoGain  # if better than current best, set to best
             bestFeature = i
     return bestFeature  # returns an integer
+
+
+# 根据计算信息增益比计算最优特征
+def chooseBestFeatureByRatioToSplit(dataSet):
+    """
+    输入：数据集
+    输出：最好的划分维度
+    描述：选择最好的数据集划分维度
+    """
+    numFeatures = len(dataSet[0]) - 1
+    baseEntropy = calcShannonEnt(dataSet)
+    bestInfoGainRatio = 0.0
+    bestFeature = -1
+    for i in range(numFeatures):
+        featList = [example[i] for example in dataSet]
+        uniqueVals = set(featList)
+        newEntropy = 0.0
+        splitInfo = 0.0
+        for value in uniqueVals:
+            subDataSet = splitDataSet(dataSet, i, value)
+            prob = len(subDataSet) / float(len(dataSet))
+            newEntropy += prob * calcShannonEnt(subDataSet)
+            splitInfo += -prob * log(prob, 2)
+        infoGain = baseEntropy - newEntropy
+        if (splitInfo == 0):  # fix the overflow bug
+            continue
+        infoGainRatio = infoGain / splitInfo
+        if infoGainRatio > bestInfoGainRatio:
+            bestInfoGainRatio = infoGainRatio
+            bestFeature = i
+    return bestFeature
 
 
 # 做最后阶段的群体选优策略
