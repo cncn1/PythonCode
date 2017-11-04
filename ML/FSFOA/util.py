@@ -1,8 +1,6 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 import datetime
-import numpy as np
-from sklearn.decomposition import PCA
 
 
 # 读取文件，返回list结构
@@ -72,7 +70,7 @@ def loadData(groupName, labName, eachfileNum):
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
         loop_condition = 20
-        initialization_parameters = [15, 9, 7, 0.05, 50]
+        initialization_parameters = [15, 9, 18, 0.05, 50]
     elif groupName == 'segmentation':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
@@ -102,7 +100,7 @@ def loadData(groupName, labName, eachfileNum):
         trainX, trainY = loadDataBase(trainFile, '\t')
         predictX, predictY = loadDataBase(predictFile, '\t')
         loop_condition = 20
-        initialization_parameters = [15, 20, 4, 0.05, 50]
+        initialization_parameters = [15, 20, 40, 0.05, 50]
     return trainX, trainY, predictX, predictY, loop_condition, initialization_parameters
 
 
@@ -110,30 +108,36 @@ def loadData(groupName, labName, eachfileNum):
 def print_to_file(algorithmName, foldName, dataSetName, labName, accuracy_mean, DR_mean, OP_sub, total_time):
     out_file_name = dataSetName + '_' + str(labName)
     out_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    str_OP_sub = ''.join(OP_sub)
-    out_result = out_time + '\n' + str(float('%.2f' % accuracy_mean)) + '\t' + str(float('%.2f' % DR_mean)) + '\t' + str_OP_sub + '\t' + total_time
+    str_OP_sub = ''
+    for eachOp_sub in OP_sub:
+        str_OP_sub += eachOp_sub + '\t'
+    str_OP_sub = '[' + str_OP_sub[:-1] + ']'
+    out_result = '输出时间: ' + out_time + '\t' + '运行时间(s):' + str(total_time) + '\n' + str(float('%.2f' % accuracy_mean)) + '\t' + str(float('%.2f' % DR_mean)) + '\t'
     with open("F:/AlgorithmOut/" + algorithmName + "/" + foldName + "/%s.txt" % out_file_name, "a") as f:
+        f.write("%s\n\n" % out_result)
+    out_result = '输出时间: ' + out_time + '\t' + '运行时间(s):' + str(total_time) + '\n' + str_OP_sub
+    with open("F:/AlgorithmOut/" + algorithmName + "/" + foldName + "/%s.txt" % out_file_name + '_sub', "a") as f:
         f.write("%s\n\n" % out_result)
 
 
-def pca(X, k):  # k is the components you want
-    # mean of each feature
-    n_samples, n_features = X.shape
-    mean = np.array([np.mean(X[:, i]) for i in range(n_features)])
-    # normalization
-    norm_X = X - mean
-    # scatter matrix
-    scatter_matrix = np.dot(np.transpose(norm_X), norm_X)
-    # Calculate the eigenvectors and eigenvalues
-    eig_val, eig_vec = np.linalg.eig(scatter_matrix)
-    eig_pairs = [(np.abs(eig_val[i]), eig_vec[:, i]) for i in range(n_features)]
-    # sort eig_vec based on eig_val from highest to lowest
-    eig_pairs.sort(reverse=True)
-    # select the top k eig_vec
-    feature = np.array([ele[1] for ele in eig_pairs[:k]])
-    # get new data
-    data = np.dot(norm_X, np.transpose(feature))
-    return data
+# def pca(X, k):  # k is the components you want
+#     # mean of each feature
+#     n_samples, n_features = X.shape
+#     mean = np.array([np.mean(X[:, i]) for i in range(n_features)])
+#     # normalization
+#     norm_X = X - mean
+#     # scatter matrix
+#     scatter_matrix = np.dot(np.transpose(norm_X), norm_X)
+#     # Calculate the eigenvectors and eigenvalues
+#     eig_val, eig_vec = np.linalg.eig(scatter_matrix)
+#     eig_pairs = [(np.abs(eig_val[i]), eig_vec[:, i]) for i in range(n_features)]
+#     # sort eig_vec based on eig_val from highest to lowest
+#     eig_pairs.sort(reverse=True)
+#     # select the top k eig_vec
+#     feature = np.array([ele[1] for ele in eig_pairs[:k]])
+#     # get new data
+#     data = np.dot(norm_X, np.transpose(feature))
+#     return data
 
 
 if __name__ == '__main__':

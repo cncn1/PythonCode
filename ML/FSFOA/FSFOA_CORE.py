@@ -17,12 +17,9 @@ def reverse_binary_LSC(vice_verse_attri, area_limit_forest_iniPG):
     for area_limit_forest_tree in area_limit_forest_iniPG:
         area_limit_forest_tree.age += 1
     for tree_age0 in area_limit_forest_age0:
-        # print '刚开始时的tree_age0', tree_age0.list, tree_age0.age
-        # print '需要反转的属性', vice_verse_attri
         for each_attri in vice_verse_attri:
             temp_tree_age0 = deepcopy(tree_age0)
             temp_tree_age0.list = revers(temp_tree_age0.list, each_attri, 0)
-            # print '翻转后的', temp_tree_age0.list, temp_tree_age0.age
             after_reverse.append(deepcopy(temp_tree_age0))
     return after_reverse
 
@@ -49,15 +46,10 @@ def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, a
                 data_sample = read_data_fea(fea_list, trainX)
                 data_predict = read_data_fea(fea_list, predictX)
                 acc.append(trainSelect(data_sample, trainY, data_predict, predictY, KinKNN))  # 每棵树的准确率存在acc中
-                # acc.append(train_knn(data_sample, trainY, data_predict, predictY))
-                # acc.append(train_svm(data_sample, trainY, data_predict, predictY))
-                # acc.append(train_tree(data_sample, trainY, data_predict, predictY))
             else:
-                # print 'fea_list is null'
                 acc.append(0)
         for i in xrange(num_extra):
             acc_min = min(acc)
-            # print('acc_min',acc_min)
             acc_min_index = acc.index(acc_min)
             acc[acc_min_index] = 100
             acc_omit_index.append(acc_min_index)
@@ -67,11 +59,29 @@ def select_trees(trainX, trainY, predictX, predictY, life_time, area, feature, a
     return selected_trees
 
 
-# Global_seeding（全局播种）
-def reverse_binary_GSC(transferRate, candidate_area, feature_length, life_time):
+# FSFOA Global_seeding（全局播种）
+def reverse_binary_GSC_FSFOA(transferRate, candidate_area, feature_length, GSC):
     after_reverse = []
     selected_tree_area = []  # 从候选区中挑出来进行反转的树
-    GSC0 = 1.0 * min(2 + 2 * life_time, feature_length * 0.5)  # GSC的初值设置
+    num_percent_transfer = int(len(candidate_area) * transferRate)
+    j = 0
+    while j < num_percent_transfer:
+        y = random.randint(0, len(candidate_area))
+        if candidate_area[y] not in selected_tree_area:
+            selected_tree_area.append(candidate_area[y])
+            j = j + 1
+        else:
+            continue
+    for selected_tree in selected_tree_area:
+        vice_verse_attri_GSC = random_form(GSC, feature_length)  # 全局播种特征的集合
+        selected_tree.list = revers(selected_tree.list, vice_verse_attri_GSC)
+        after_reverse.append(deepcopy(selected_tree))
+    return after_reverse
+
+# EFSFOA Global_seeding（全局播种）
+def reverse_binary_GSC_EFSFOA(transferRate, candidate_area, feature_length, GSC0):
+    after_reverse = []
+    selected_tree_area = []  # 从候选区中挑出来进行反转的树
     num_percent_transfer = int(len(candidate_area) * transferRate)
     j = 0
     while j < num_percent_transfer:

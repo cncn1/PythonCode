@@ -3,7 +3,7 @@
 import random
 import sys
 import numpy as np
-
+import time
 
 def index_replace(index, replace_string, const_value):
     new_string = ''
@@ -48,21 +48,12 @@ class Tree:
         self.list = tree_list
         self.age = tree_age
 
-def add(x, y,z):
-    return x+y
-def cheng(x,y,z):
-    return x*y
-def jian(x,y,z):
-    return x+y-z
-def fun(str):
-    if str == '1':
-        return add
-    elif str == '2':
-        return cheng
-    elif str == '3':
-        return jian
 
 if __name__ == '__main__':
+    start = time.clock()
+    print start
+    # k = ''.join(t)
+    # print k
     # index = [1, 2]
     # dataMap = np.array([[1, 4, 1, 4],
     #                     [2, 5, 2, 5],
@@ -72,7 +63,3 @@ if __name__ == '__main__':
     # for i in index:
     #     dataSim.append(dataMap[:, i])
     # print np.mat(dataSim).T
-    algorithm = fun('2')
-    print algorithm
-    k = algorithm(3,6,8)
-    print k

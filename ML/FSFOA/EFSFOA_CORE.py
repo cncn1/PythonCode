@@ -65,39 +65,28 @@ def GroupSelection(optimal_area, feature_total, generate_num):
     index = feature_total
     while generate_num > 1:
         index -= 1
-        last_compare_subset_accuracy[optimal_feature_index[index]] = 1
         last_compare_subset_DR[optimal_feature_index[index]] = 1
+        last_compare_subset_accuracy[optimal_feature_index[index]] = 1
         generate_num -= 1
     last_compare_subset_accuracy[optimal_feature_index[index - 1]] = 1
+    last_compare_subset_accuracy = listIntToStr(last_compare_subset_accuracy)
+    last_compare_subset_DR = listIntToStr(last_compare_subset_DR)
     return last_compare_subset_accuracy, last_compare_subset_DR
 
 
-def OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, trainSelect, KinKNN=1):
+def OptimalResult(trainX, trainY, predictX, predictY, resultList, feature, loop_condition, trainSelect, KinKNN=1):
     accuracy = 0.0
-    for index in xrange(len(resultList)):
-        fea_list_CB = numtofea(resultList[index], feature)
-        data_sample = read_data_fea(fea_list_CB, trainX)
-        data_predict = read_data_fea(fea_list_CB, predictX)
-        accuracy_temp = trainSelect(data_sample, trainY, data_predict, predictY, KinKNN)
-        # if algorithm == 'KNN':
-        #     accuracy_temp = train_knn(data_sample, trainY, data_predict, predictY, k)
-        # elif algorithm == 'SVM':
-        #     accuracy_temp = train_svm(data_sample, trainY, data_predict, predictY)
-        # elif algorithm == 'J48':
-        #     accuracy_temp = train_tree(data_sample, trainY, data_predict, predictY)
+    for oplist in resultList:
+        m = 0
+        accuracy_temp = 0.0
+        while m < loop_condition:
+            m += 1
+            accuracy_temp += check(trainX, trainY, predictX, predictY, oplist, feature, trainSelect, KinKNN)
+        accuracy_temp /= loop_condition
         if accuracy < accuracy_temp:
             accuracy = accuracy_temp
-            optimal_subset = resultList[index]
-        elif accuracy == accuracy_temp and len(resultList[index]) < len(optimal_subset):
-            optimal_subset = resultList[index]
-    DR = 1 - (1.0 * optimal_subset.count(1) / len(feature))
+            optimal_subset = oplist
+        elif accuracy == accuracy_temp and len(oplist) < len(optimal_subset):
+            optimal_subset = oplist
+    DR = 1.0 - (1.0 * optimal_subset.count('1') / len(feature))
     return accuracy, DR, optimal_subset
-
-
-if __name__ == '__main__':
-    optimal_area = [[1, 1, 0, 0, 1, 0, 1], [0, 1, 1, 0, 1, 1, 1], [0, 0, 0, 0, 1, 1, 1]]
-    s1, s2 = GroupSelection(optimal_area, 7, 4)
-    print s1, s2
-    # myDat, labels = createDataSet()
-    # optimalFeature = chooseBestFeatureToSplit(myDat)
-    # print optimalFeature
