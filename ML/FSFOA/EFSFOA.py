@@ -172,7 +172,7 @@ if __name__ == '__main__':
                     '''
                     # 改进一：根据信息增益，挑出具有最好用于划分数据集的特征，后续转成根据信息增益比启发50%
                     optimalFeature = chooseBestFeatureToSplit(trainX)
-                    EFSFOA_iniPG = ini_PG(area_limit_forest, optimalFeature=optimalFeature)
+                    EFSFOA_iniPG = ini_PG(area_limit_forest)
                     EFSFOA_accuracy, EFSFOA_DR, EFSFOA_OPSUB, EFSFOA_TIME = EFSFOA(EFSFOA_iniPG)
                     EFSFOA_accuracy_total += EFSFOA_accuracy
                     EFSFOA_DR_total += EFSFOA_DR
