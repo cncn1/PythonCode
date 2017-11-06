@@ -61,7 +61,7 @@ def EFSFOA(area_limit_forest_iniPG):
         # 只需要根据转化率值完成候选区5%的反转即可(这里可以改进)
         '''
         # initialization_parameters[3] 是转化率，这个为什么不需要上启发式函数，个人认为是因为候选区中的树会越来越多已经达到了动态的变化过程
-        GSC0 = 1.0 * min(2 + 2 * num_fea_original, initialization_parameters[0] * 0.5)  # GSC的初值设置
+        GSC0 = 1.0 * min(2 + 2 * initialization_parameters[0], num_fea_original * 0.5)  # GSC的初值设置
         after_GSC_reverse = reverse_binary_GSC_EFSFOA(initialization_parameters[3], candidate_area_growing, num_fea_original,
                                                GSC0)
         area_limit_forest_iniPG += after_GSC_reverse
@@ -130,9 +130,8 @@ if __name__ == '__main__':
                   'wine': ['wine', [1, 1, 10, 2, 5, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 5, 2, 37, 1, 10]],
                   'segmentation': ['segmentation', [1, 1, 10]], 'vehicle': ['vehicle', [1, 1, 10, 2, 5, 2, 37, 1, 1]],
                   'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 5, 2]],
-                  'glass': ['glass', [1, 1, 10, 2, 5, 2, 37, 1, 1]], 'z1': ['srbct', [37, 1, 10]],
-                  'z2': ['arcene', [1, 1, 1]]}
-    inputDict1 = {'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
+                  'glass': ['glass', [1, 1, 10, 2, 5, 2, 37, 1, 1]], 'z1': ['srbct', [37, 1, 10]]}
+    inputDict1 = {'z2': ['arcene', [1, 1, 1]]}
     KinKNN = 1  # 设置KNN中的K值
     # trainName = ['J48', 'SVM', '1NN', '3NN', '5NN']
     trainName = '5NN'
