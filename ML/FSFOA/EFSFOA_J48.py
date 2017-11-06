@@ -130,7 +130,7 @@ if __name__ == '__main__':
         inputDict0 = {'ionosphere': ['ionosphere', [1, 1, 10, 37, 1, 10]],
                       'wine': ['wine', [1, 1, 10, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10]], 'vehicle': ['vehicle', [1, 1, 10]],
                       'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10]],
-                      'glass': ['glass', [1, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
+                      'glass': ['glass', [1, 1, 10]]}
         inputDict1 = {'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
         KinKNN = 1  # 设置KNN中的K值
         # trainName = ['J48', 'SVM', '1NN', '3NN', '5NN']
