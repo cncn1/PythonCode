@@ -49,57 +49,57 @@ def loadData(groupName, labName, eachfileNum):
     if groupName == 'ionosphere':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 7, 15, 0.05, 50]
     elif groupName == 'cleveland':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 3, 6, 0.05, 50]
     elif groupName == 'wine':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 3, 6, 0.05, 50]
     elif groupName == 'sonar':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 12, 30, 0.05, 50]
     elif groupName == 'srbct':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 9, 18, 0.05, 50]
     elif groupName == 'segmentation':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 4, 9, 0.05, 50]
     elif groupName == 'vehicle':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 4, 9, 0.05, 50]
     elif groupName == 'dermatology':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 7, 15, 0.05, 50]
     elif groupName == 'heart':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 3, 6, 0.05, 50]
     elif groupName == 'glass':
         trainX, trainY = loadDataBase(trainFile)
         predictX, predictY = loadDataBase(predictFile)
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 2, 4, 0.05, 50]
     elif groupName == 'arcene':  # uci 特征选择 二分类 数据集
         trainX, trainY = loadDataBase(trainFile, '\t')
         predictX, predictY = loadDataBase(predictFile, '\t')
-        loop_condition = 50
+        loop_condition = 20
         initialization_parameters = [15, 20, 40, 0.05, 50]
     return trainX, trainY, predictX, predictY, loop_condition, initialization_parameters
 
