@@ -112,12 +112,13 @@ def train_tree(data_train, label_train, data_pre, label_pre, *args):
 
 # 分类器选择函数
 def select_train(train_name):
-    if train_name in ('KNN', '1NN', '3NN', '5NN'):
-        return train_knn
+    if train_name in ('1NN', '3NN', '5NN'):
+        k = int(train_name[0])
+        return train_knn, k
     elif train_name == 'SVM':
-        return train_svm
+        return train_svm, 0  # 0表示KinKNN无效
     elif train_name == 'J48':
-        return train_tree
+        return train_tree, 0
 
 
 # 根据最优特征子集校验计算准确率准确率和维度缩减率

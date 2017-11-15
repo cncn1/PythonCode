@@ -131,11 +131,10 @@ if __name__ == '__main__':
                       'wine': ['wine', [37, 1, 9]], 'sonar': ['sonar', [37, 1, 10]],
                       'vehicle': ['vehicle', [37, 1, 1]]}
         inputDict1 = {'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
-        KinKNN = 1  # 设置KNN中的K值
         # trainName = ['J48', 'SVM', '1NN', '3NN', '5NN']
         trainName = '5NN'
         print trainName, '\n'
-        trainSelect = select_train(trainName)  # 选择分类器
+        trainSelect, KinKNN = select_train(trainName)  # 选择分类器
         for key in inputDict0:
             dataSet = inputDict0[key]
             loop0 = len(dataSet[1]) / 3  # 实验组数

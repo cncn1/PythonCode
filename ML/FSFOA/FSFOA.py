@@ -36,7 +36,7 @@ def FSFOA(area_limit_forest_iniPG):
     accuracy_max_DR = []  # 存储循环loop_condition中每次的最大准确率所对应的维度缩减
     m = 0
     while m < loop_condition:
-        # print '****************************第', m + 1, '次循环*********************'
+        print '****************************第', m + 1, '次循环*********************'
         m += 1
         vice_verse_attri = random_form(initialization_parameters[1], num_fea_original)
         # print '#######################################第', m, 'local seeding播种开始##################################'
@@ -117,13 +117,13 @@ if __name__ == '__main__':
                   'wine': ['wine', [1, 1, 10, 2, 5, 2, 37, 1, 9]], 'sonar': ['sonar', [1, 1, 10, 2, 5, 2, 37, 1, 10]],
                   'segmentation': ['segmentation', [1, 1, 10]], 'vehicle': ['vehicle', [1, 1, 10, 2, 5, 2, 37, 1, 1]],
                   'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 5, 2]],
-                  'glass': ['glass', [1, 1, 10, 2, 5, 2, 37, 1, 1]], 'z1': ['srbct', [37, 1, 10]],
-                  'z2': ['arcene', [1, 1, 1]]}
-    inputDict1 = {'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
-    KinKNN = 1  # 设置KNN中的K值
+                  'glass': ['glass', [1, 1, 10, 2, 5, 2, 37, 1, 1]]}
+    # inputDict1 = {'srbct': ['srbct', [37, 1, 10]]}
+    # inputDict2 = {'arcene': ['arcene', [37, 1, 1]]}
     # trainName = ['J48', 'SVM', '1NN', '3NN', '5NN']
-    trainName = 'J48'
-    trainSelect = select_train(trainName)  # 选择分类器
+    trainName = '3NN'
+    print trainName, '\n'
+    trainSelect, KinKNN = select_train(trainName)  # 选择分类器
     for key in inputDict0:
         dataSet = inputDict0[key]
         loop0 = len(dataSet[1]) / 3  # 实验组数

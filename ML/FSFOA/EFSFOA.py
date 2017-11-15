@@ -131,12 +131,11 @@ if __name__ == '__main__':
                   'segmentation': ['segmentation', [1, 1, 10]], 'vehicle': ['vehicle', [1, 1, 10, 2, 5, 2, 37, 1, 1]],
                   'dermatology': ['dermatology', [1, 1, 10, 37, 1, 10]], 'heart': ['heart', [1, 1, 10, 2, 5, 2]],
                   'glass': ['glass', [1, 1, 10, 2, 5, 2, 37, 1, 1]], 'z1': ['srbct', [37, 1, 10]]}
-    inputDict1 = {'z2': ['arcene', [1, 1, 1]]}
-    KinKNN = 1  # 设置KNN中的K值
+    inputDict1 = {'z2': ['arcene', [37, 1, 1]]}
     # trainName = ['J48', 'SVM', '1NN', '3NN', '5NN']
     trainName = '5NN'
     print trainName, '\n'
-    trainSelect = select_train(trainName)  # 选择分类器
+    trainSelect, KinKNN = select_train(trainName)  # 选择分类器
     for key in inputDict0:
         dataSet = inputDict0[key]
         loop0 = len(dataSet[1]) / 3  # 实验组数
