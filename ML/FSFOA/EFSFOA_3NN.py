@@ -131,7 +131,7 @@ if __name__ == '__main__':
                       'wine': ['wine', [1, 1, 10]],
                       'segmentation': ['segmentation', [1, 1, 10]],
                       'heart': ['heart', [1, 1, 10]]}
-        inputDict1 = {'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [1, 1, 1]]}
+        inputDict1 = {'z1': ['srbct', [37, 1, 10]], 'z2': ['arcene', [37, 1, 1]]}
         # trainName = ['J48', 'SVM', '1NN', '3NN', '5NN']
         trainName = '3NN'
         print trainName, '\n'
