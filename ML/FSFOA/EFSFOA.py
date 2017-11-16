@@ -133,11 +133,11 @@ if __name__ == '__main__':
                   'glass': ['glass', [1, 1, 10, 2, 5, 2, 37, 1, 1]], 'z1': ['srbct', [37, 1, 10]]}
     inputDict1 = {'z2': ['arcene', [37, 1, 1]]}
     # trainName = ['J48', 'SVM', '1NN', '3NN', '5NN']
-    trainName = '5NN'
+    DataSets, trainName = inputDict1, '5NN',
     print trainName, '\n'
     trainSelect, KinKNN = select_train(trainName)  # 选择分类器
-    for key in inputDict0:
-        dataSet = inputDict0[key]
+    for key in DataSets:
+        dataSet = DataSets[key]
         loop0 = len(dataSet[1]) / 3  # 实验组数
         for loop in xrange(loop0):
             labName = dataSet[1][(loop * 3)]  # 每组实验具体内容
