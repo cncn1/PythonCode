@@ -43,7 +43,7 @@ while True:
             G[dic[r[i]]][dic[r[i + 1]]] = G[dic[r[i + 1]]][dic[r[i]]] = 1
         D, P = floyd_warshall(G)
         print G, '\n', D, '\n', P  # 信息输出
-        dis = -1  # 表示隔了度
+        dis = -1  # 表示隔离度
         for i in xrange(p):
             for j in xrange(p):
                 dis = max(dis, D[i][j])
